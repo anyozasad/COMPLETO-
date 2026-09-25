@@ -9,7 +9,7 @@ class AuthController {
         $usuarioModel->crearAdmin();
 
         if (isset($_SESSION['user_id'])) {
-            header('Location: /home/index');
+            header('Location: ' . BASE_URL . '/home/index');
             exit;
         }
         require_once '../app/views/auth/login.php';
@@ -35,7 +35,7 @@ class AuthController {
                 $_SESSION['user_name'] = $usuario['nombre'];
                 $_SESSION['user_rol'] = $usuario['rol'];
                 
-                header('Location: /home/index');
+                header('Location: ' . BASE_URL . '/home/index');
 
             } else {
                 // CASO: Datos incorrectos
@@ -47,6 +47,6 @@ class AuthController {
 
     public function logout() {
         session_destroy();
-        header('Location: /auth/index');
+        header('Location: ' . BASE_URL . '/auth/index');
     }
 }
