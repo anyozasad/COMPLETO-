@@ -5,7 +5,7 @@ class SociosController {
 
     private function verificarAuth() {
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /auth/index');
+            header('Location: ' . BASE_URL . '/auth/index');
             exit;
         }
     }
@@ -57,7 +57,7 @@ class SociosController {
 
             $socioModel = new Socio();
             if ($socioModel->agregar($datos)) {
-                header('Location: /socios/index');
+                header('Location: ' . BASE_URL . '/socios/index');
             } else {
                 echo "Error al guardar el socio.";
             }
@@ -72,7 +72,7 @@ class SociosController {
         if ($socio) {
             require_once '../app/views/socios/editar.php';
         } else {
-            header('Location: /socios/index');
+            header('Location: ' . BASE_URL . '/socios/index');
         }
     }
 
@@ -122,7 +122,7 @@ class SociosController {
             
             // Llamamos a actualizar
             if ($socioModel->actualizar($datos)) {
-                header('Location: /socios/index');
+                header('Location: ' . BASE_URL . '/socios/index');
             } else {
                 echo "Error al actualizar. Verifique la base de datos.";
             }
@@ -133,7 +133,7 @@ class SociosController {
         $this->verificarAuth();
         $socioModel = new Socio();
         if ($socioModel->cambiarEstado($id, $estado)) {
-            header('Location: /socios/index');
+            header('Location: ' . BASE_URL . '/socios/index');
         }
     }
 }
