@@ -36,7 +36,7 @@ class PlanesController {
 
             $planModel = new Plan();
             if ($planModel->agregar($datos)) {
-                header('Location: /planes/index');
+                header('Location: ' . BASE_URL . '/planes/index');
             }
         }
     }
@@ -49,7 +49,7 @@ class PlanesController {
         if ($plan) {
             require_once '../app/views/planes/editar.php';
         } else {
-            header('Location: /planes/index');
+            header('Location: ' . BASE_URL . '/planes/index');
         }
     }
 
@@ -66,7 +66,7 @@ class PlanesController {
 
             $planModel = new Plan();
             if ($planModel->actualizar($datos)) {
-                header('Location: /planes/index');
+                header('Location: ' . BASE_URL . '/planes/index');
             }
         }
     }
@@ -75,6 +75,6 @@ class PlanesController {
         $this->verificarAuth();
         $planModel = new Plan();
         $planModel->cambiarEstado($id, $estado);
-        header('Location: /planes/index');
+        header('Location: ' . BASE_URL . '/planes/index');
     }
 }
