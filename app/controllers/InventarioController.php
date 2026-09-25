@@ -28,7 +28,7 @@ class InventarioController {
             
             if(empty($nombre)) {
                 // Manejo de error básico
-                header('Location: /inventario/categorias?error=vacío');
+                header('Location: ' . BASE_URL . '/inventario/categorias?error=vacío');
                 exit();
             }
 
@@ -40,14 +40,14 @@ class InventarioController {
                 $this->categoriaModel->agregar($nombre);
             }
             
-            header('Location: /inventario/categorias?success=1');
+            header('Location: ' . BASE_URL . '/inventario/categorias?success=1');
             exit();
         }
     }
 
     public function cambiarEstadoCategoria($id, $estado = 'inactivo') {
         $this->categoriaModel->cambiarEstado($id, $estado);
-        header('Location: /inventario/categorias');
+        header('Location: ' . BASE_URL . '/inventario/categorias');
         exit();
     }
 
@@ -108,14 +108,14 @@ class InventarioController {
                 $this->productoModel->agregar($datos);
             }
             
-            header('Location: /inventario/productos?success=1');
+            header('Location: ' . BASE_URL . '/inventario/productos?success=1');
             exit();
         }
     }
 
     public function cambiarEstadoProducto($id, $estado = 'inactivo') {
         $this->productoModel->cambiarEstado($id, $estado);
-        header('Location: /inventario/productos');
+        header('Location: ' . BASE_URL . '/inventario/productos');
         exit();
     }
 
@@ -126,7 +126,7 @@ class InventarioController {
             $operacion = $_POST['operacion']; // sumar o restar
             
             $this->productoModel->actualizarStock($id, $cantidad, $operacion);
-            header('Location: /inventario/productos?success=stock');
+            header('Location: ' . BASE_URL . '/inventario/productos?success=stock');
             exit();
         }
     }
