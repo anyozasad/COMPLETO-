@@ -1,0 +1,42 @@
+name: Unpack Gym System Source
+
+on:
+  push:
+    paths:
+      - 'source.part*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Rebuild source archive
+        shell: bash
+        run: |
+          cat source.part* > gym-system-repository.zip
+          rm -rf .unpack
+          mkdir .unpack
+          unzip -q gym-system-repository.zip -d .unpack
+          rsync -a .unpack/ ./ --exclude='.git' --exclude='.github'
+          rm -rf .unpack gym-system-repository.zip source.part*
+
+      - name: Commit extracted project
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No hay cambios."
+            exit 0
+          fi
+          git commit -m "Subir proyecto Gym System completo"
+          git push
