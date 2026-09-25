@@ -11,7 +11,7 @@ class NotificacionesController {
         }
         // Solo admin y recepcionistas
         if (!isset($_SESSION['user_id']) || $_SESSION['user_rol'] == 'entrenador') {
-            header('Location: /auth/index');
+            header('Location: ' . BASE_URL . '/auth/index');
             exit();
         }
         $this->socioModel = new Socio();
@@ -38,13 +38,13 @@ class NotificacionesController {
 
         if (!$socio) {
             $_SESSION['notif_mensaje'] = ['tipo' => 'danger', 'texto' => 'Socio no encontrado o sin suscripción próxima a vencer.'];
-            header('Location: /notificaciones/index');
+            header('Location: ' . BASE_URL . '/notificaciones/index');
             exit();
         }
 
         if (empty($socio['whatsapp_api_key']) || empty($socio['telefono'])) {
             $_SESSION['notif_mensaje'] = ['tipo' => 'warning', 'texto' => "El socio <strong>{$socio['nombre']}</strong> no tiene teléfono o API Key configurado."];
-            header('Location: /notificaciones/index');
+            header('Location: ' . BASE_URL . '/notificaciones/index');
             exit();
         }
 
@@ -65,7 +65,7 @@ class NotificacionesController {
             $_SESSION['notif_mensaje'] = ['tipo' => 'danger', 'texto' => "❌ Error al enviar a {$socio['nombre']}: " . htmlspecialchars($resultado['response'])];
         }
 
-        header('Location: /notificaciones/index');
+        header('Location: ' . BASE_URL . '/notificaciones/index');
         exit();
     }
 
@@ -105,7 +105,7 @@ class NotificacionesController {
             'texto' => "Mensajes enviados: <strong>$enviados</strong> ✅ &nbsp; Fallidos: <strong>$fallidos</strong> ❌"
         ];
 
-        header('Location: /notificaciones/index');
+        header('Location: ' . BASE_URL . '/notificaciones/index');
         exit();
     }
 
@@ -115,7 +115,7 @@ class NotificacionesController {
             $socio_id = $_POST['socio_id'];
             $apikey   = trim($_POST['whatsapp_api_key']);
             $this->socioModel->guardarApiKey($socio_id, $apikey);
-            header('Location: /notificaciones/index?saved=1');
+            header('Location: ' . BASE_URL . '/notificaciones/index?saved=1');
             exit();
         }
     }
