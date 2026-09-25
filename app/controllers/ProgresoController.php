@@ -5,7 +5,7 @@ require_once '../app/models/Socio.php';
 class ProgresoController {
 
     private function verificarAuth() {
-        if (!isset($_SESSION['user_id'])) { header('Location: /auth/index'); exit; }
+        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_URL . '/auth/index'); exit; }
     }
 
     // Vista principal del perfil de progreso
@@ -17,7 +17,7 @@ class ProgresoController {
 
         // 1. Datos del Socio
         $socio = $socioModel->obtenerPorId($socio_id);
-        if(!$socio) { header('Location: /socios/index'); }
+        if(!$socio) { header('Location: ' . BASE_URL . '/socios/index'); }
 
         // 2. Datos de Medidas (Historial)
         $medidas = $progresoModel->obtenerMedidas($socio_id);
@@ -57,7 +57,7 @@ class ProgresoController {
             
             $progresoModel = new Progreso();
             $progresoModel->guardarMedida($datos);
-            header("Location: /progreso/ver/$id");
+            header("Location: " . BASE_URL . "/progreso/ver/$id");
         }
     }
 
@@ -78,7 +78,7 @@ class ProgresoController {
             
             $progresoModel = new Progreso();
             $progresoModel->guardarRutina($datos);
-            header("Location: /progreso/ver/$id?tab=rutina"); // Volver a la pestaña rutina
+            header("Location: " . BASE_URL . "/progreso/ver/$id?tab=rutina"); // Volver a la pestaña rutina
         }
     }
 
@@ -86,6 +86,6 @@ class ProgresoController {
         $this->verificarAuth();
         $progresoModel = new Progreso();
         $progresoModel->eliminarMedida($id_medida);
-        header("Location: /progreso/ver/$id_socio");
+        header("Location: " . BASE_URL . "/progreso/ver/$id_socio");
     }
 }
