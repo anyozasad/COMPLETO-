@@ -9,11 +9,11 @@ class ReportesController {
 
     private function verificarAuth() {
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /auth/index');
+            header('Location: ' . BASE_URL . '/auth/index');
             exit;
         }
         if ($_SESSION['user_rol'] !== 'admin') {
-            header('Location: /home/index');
+            header('Location: ' . BASE_URL . '/home/index');
             exit;
         }
     }
