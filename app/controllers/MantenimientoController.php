@@ -13,7 +13,7 @@ class MantenimientoController {
         // Solo admins permitidos
         if (!isset($_SESSION['user_rol']) || $_SESSION['user_rol'] !== 'admin') {
             $_SESSION['acceso_denegado'] = "Acceso denegado: Se requiere rol de administrador.";
-            header('Location: /home/index');
+            header('Location: ' . BASE_URL . '/home/index');
             exit;
         }
 
@@ -77,7 +77,7 @@ class MantenimientoController {
 
             if ($file['error'] !== UPLOAD_ERR_OK) {
                 $_SESSION['error'] = 'Error al subir el archivo.';
-                header('Location: /mantenimiento/index');
+                header('Location: ' . BASE_URL . '/mantenimiento/index');
                 exit;
             }
 
@@ -85,7 +85,7 @@ class MantenimientoController {
             $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
             if ($ext !== 'sql') {
                 $_SESSION['error'] = 'Solo se permiten archivos .sql';
-                header('Location: /mantenimiento/index');
+                header('Location: ' . BASE_URL . '/mantenimiento/index');
                 exit;
             }
 
@@ -93,7 +93,7 @@ class MantenimientoController {
             $sqlContent = file_get_contents($file['tmp_name']);
             if (empty(trim($sqlContent))) {
                 $_SESSION['error'] = 'El archivo está vacío.';
-                header('Location: /mantenimiento/index');
+                header('Location: ' . BASE_URL . '/mantenimiento/index');
                 exit;
             }
 
@@ -104,7 +104,7 @@ class MantenimientoController {
                 $_SESSION['error'] = "Error al restaurar: " . $e->getMessage();
             }
 
-            header('Location: /mantenimiento/index');
+            header('Location: ' . BASE_URL . '/mantenimiento/index');
             exit;
         }
     }
@@ -146,7 +146,7 @@ class MantenimientoController {
                 $_SESSION['error'] = "Error al reiniciar la base de datos: " . $e->getMessage();
             }
 
-            header('Location: /mantenimiento/index');
+            header('Location: ' . BASE_URL . '/mantenimiento/index');
             exit;
         }
     }
