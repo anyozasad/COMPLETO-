@@ -16,7 +16,7 @@
 
 
 -- Volcando estructura de base de datos para gym_system
-CREATE DATABASE IF NOT EXISTS `gym_system` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+CREATE DATABASE IF NOT EXISTS `gym_system` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
 USE `gym_system`;
 
 -- Volcando estructura para tabla gym_system.asistencias
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `asistencias` (
   PRIMARY KEY (`id`),
   KEY `socio_id` (`socio_id`),
   CONSTRAINT `asistencias_ibfk_1` FOREIGN KEY (`socio_id`) REFERENCES `socios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Volcando datos para la tabla gym_system.asistencias: ~10 rows (aproximadamente)
 DELETE FROM `asistencias`;
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS `cajas` (
   PRIMARY KEY (`id`),
   KEY `usuario_id` (`usuario_id`),
   CONSTRAINT `cajas_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Volcando datos para la tabla gym_system.cajas: ~0 rows (aproximadamente)
 DELETE FROM `cajas`;
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS `categorias` (
   `nombre` varchar(100) NOT NULL,
   `estado` enum('activo','inactivo') DEFAULT 'activo',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Volcando datos para la tabla gym_system.categorias: ~3 rows (aproximadamente)
 DELETE FROM `categorias`;
@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS `configuracion` (
   `logo` varchar(255) DEFAULT NULL,
   `moneda` varchar(10) DEFAULT '$',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Volcando datos para la tabla gym_system.configuracion: ~0 rows (aproximadamente)
 DELETE FROM `configuracion`;
@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS `detalle_ventas` (
   KEY `producto_id` (`producto_id`),
   CONSTRAINT `detalle_ventas_ibfk_1` FOREIGN KEY (`venta_id`) REFERENCES `ventas` (`id`) ON DELETE CASCADE,
   CONSTRAINT `detalle_ventas_ibfk_2` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Volcando datos para la tabla gym_system.detalle_ventas: ~11 rows (aproximadamente)
 DELETE FROM `detalle_ventas`;
@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS `gastos` (
   `estado` enum('creado','anulado') DEFAULT 'creado',
   `motivo_anulacion` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Volcando datos para la tabla gym_system.gastos: ~10 rows (aproximadamente)
 DELETE FROM `gastos`;
@@ -165,7 +165,7 @@ CREATE TABLE IF NOT EXISTS `medidas` (
   PRIMARY KEY (`id`),
   KEY `socio_id` (`socio_id`),
   CONSTRAINT `medidas_ibfk_1` FOREIGN KEY (`socio_id`) REFERENCES `socios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Volcando datos para la tabla gym_system.medidas: ~0 rows (aproximadamente)
 DELETE FROM `medidas`;
@@ -179,7 +179,7 @@ CREATE TABLE IF NOT EXISTS `planes` (
   `descripcion` text,
   `estado` enum('activo','inactivo') DEFAULT 'activo',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Volcando datos para la tabla gym_system.planes: ~10 rows (aproximadamente)
 DELETE FROM `planes`;
@@ -209,7 +209,7 @@ CREATE TABLE IF NOT EXISTS `productos` (
   PRIMARY KEY (`id`),
   KEY `categoria_id` (`categoria_id`),
   CONSTRAINT `productos_ibfk_1` FOREIGN KEY (`categoria_id`) REFERENCES `categorias` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Volcando datos para la tabla gym_system.productos: ~10 rows (aproximadamente)
 DELETE FROM `productos`;
@@ -240,7 +240,7 @@ CREATE TABLE IF NOT EXISTS `rutinas` (
   PRIMARY KEY (`id`),
   KEY `socio_id` (`socio_id`),
   CONSTRAINT `rutinas_ibfk_1` FOREIGN KEY (`socio_id`) REFERENCES `socios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Volcando datos para la tabla gym_system.rutinas: ~0 rows (aproximadamente)
 DELETE FROM `rutinas`;
@@ -258,7 +258,7 @@ CREATE TABLE IF NOT EXISTS `socios` (
   `foto` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `dni` (`dni`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Volcando datos para la tabla gym_system.socios: ~10 rows (aproximadamente)
 DELETE FROM `socios`;
@@ -287,7 +287,7 @@ CREATE TABLE IF NOT EXISTS `suscripciones` (
   KEY `plan_id` (`plan_id`),
   CONSTRAINT `suscripciones_ibfk_1` FOREIGN KEY (`socio_id`) REFERENCES `socios` (`id`) ON DELETE CASCADE,
   CONSTRAINT `suscripciones_ibfk_2` FOREIGN KEY (`plan_id`) REFERENCES `planes` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Volcando datos para la tabla gym_system.suscripciones: ~10 rows (aproximadamente)
 DELETE FROM `suscripciones`;
@@ -313,12 +313,12 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
   `estado` enum('activo','inactivo') DEFAULT 'activo',
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Volcando datos para la tabla gym_system.usuarios: ~3 rows (aproximadamente)
 DELETE FROM `usuarios`;
 INSERT INTO `usuarios` (`id`, `nombre`, `email`, `password`, `rol`, `estado`) VALUES
-	(1, 'Administrador', 'admin@gym.com', '$2y$10$eeUFYFldSH9vWP3kElE3buIPXvXdEfIryMpYh9J47a6mxsju0q1GC', 'admin', 'activo'),
+	(1, 'Administrador', 'admin@gym.com', '$2y$12$PAzVMj0eHbqUzS3q/VJCm.Q1hRI15oVXvB/Czoon2X9EANXi3dDxa', 'admin', 'activo'),
 	(3, 'Vendedor Turno Mañana', 'recepcion@gym.com', '$2y$10$1cHBZUuhxxHZAb7u9.9OeuAkW0V99JOTLWgisEaUaLQpIv98pWBj6', 'recepcionista', 'activo'),
 	(4, 'ENTRENADOR 1', 'entrenador@gym.com', '$2y$10$gEronM53aSMRfmsqeTeGE.xm48WYy.17MBaJWAp0TMUz1S1U9NcjC', 'entrenador', 'activo');
 
@@ -336,7 +336,7 @@ CREATE TABLE IF NOT EXISTS `ventas` (
   KEY `socio_id` (`socio_id`),
   CONSTRAINT `ventas_ibfk_1` FOREIGN KEY (`caja_id`) REFERENCES `cajas` (`id`),
   CONSTRAINT `ventas_ibfk_2` FOREIGN KEY (`socio_id`) REFERENCES `socios` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Volcando datos para la tabla gym_system.ventas: ~11 rows (aproximadamente)
 DELETE FROM `ventas`;
