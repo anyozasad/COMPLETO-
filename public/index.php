@@ -9,16 +9,6 @@ if ($base === '.' || $base === '/') {
 define('BASE_URL', $base);
 
 if (BASE_URL !== '') {
-    header_register_callback(function () {
-        foreach (headers_list() as $h) {
-            if (preg_match("~^Location:\\s*(/(?!/).*)$~i", $h, $m)) {
-                header_remove('Location');
-                header('Location: ' . BASE_URL . $m[1], true);
-                break;
-            }
-        }
-    });
-
     ob_start(function ($html) {
         $b = BASE_URL;
         $html = preg_replace("~\\b(href|src|action)=([\"'])/(?!/)~i", '$1=$2' . $b . '/', $html);
