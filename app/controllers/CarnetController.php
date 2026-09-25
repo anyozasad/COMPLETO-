@@ -10,7 +10,7 @@ class CarnetController {
     
     private function verificarAuth() {
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /auth/index');
+            header('Location: ' . BASE_URL . '/auth/index');
             exit;
         }
     }
