@@ -1,0 +1,8 @@
+/vendor/
+/app/lib/phpqrcode/cache/*.dat
+/app/lib/phpqrcode/cache/*.png
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
