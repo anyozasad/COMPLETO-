@@ -8,11 +8,11 @@ class SuscripcionesController {
 
     private function verificarAuth() {
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /auth/index');
+            header('Location: ' . BASE_URL . '/auth/index');
             exit;
         }
         if ($_SESSION['user_rol'] == 'entrenador') {
-            header('Location: /home/index');
+            header('Location: ' . BASE_URL . '/home/index');
             exit;
         }
     }
@@ -70,7 +70,7 @@ class SuscripcionesController {
 
             $suscripcionModel = new Suscripcion();
             if ($suscripcionModel->crear($datos)) {
-                header('Location: /suscripciones/index');
+                header('Location: ' . BASE_URL . '/suscripciones/index');
             } else {
                 echo "Error al registrar.";
             }
@@ -81,7 +81,7 @@ class SuscripcionesController {
         $this->verificarAuth();
         $suscripcionModel = new Suscripcion();
         $suscripcionModel->cancelar($id);
-        header('Location: /suscripciones/index');
+        header('Location: ' . BASE_URL . '/suscripciones/index');
     }
 
     public function exportarExcel() {
