@@ -7,12 +7,12 @@ class CajaController {
     private function verificarAuth() {
         // 1. Verificar Login
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /auth/index');
+            header('Location: ' . BASE_URL . '/auth/index');
             exit;
         }
         // 2. SEGURIDAD: Si es entrenador, lo expulsamos
         if ($_SESSION['user_rol'] == 'entrenador') {
-            header('Location: /home/index');
+            header('Location: ' . BASE_URL . '/home/index');
             exit;
         }
     }
@@ -51,7 +51,7 @@ class CajaController {
             $monto = $_POST['monto_inicial'];
             $cajaModel = new Caja();
             if ($cajaModel->abrir($_SESSION['user_id'], $monto)) {
-                header('Location: /caja/index');
+                header('Location: ' . BASE_URL . '/caja/index');
             }
         }
     }
@@ -69,7 +69,7 @@ class CajaController {
 
             $cajaModel = new Caja();
             if ($cajaModel->cerrar($caja_id, $monto_fisico, $total_ventas, $total_gastos, $diferencia)) {
-                header('Location: /caja/index?msg=cerrado');
+                header('Location: ' . BASE_URL . '/caja/index?msg=cerrado');
             }
         }
     }
