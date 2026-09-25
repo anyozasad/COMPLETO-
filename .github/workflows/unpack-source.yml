@@ -3,7 +3,7 @@ name: Unpack Gym System Source
 on:
   push:
     paths:
-      - 'source.part*.txt'
+      - 'TRIGGER_UPLOAD'
   workflow_dispatch:
 
 permissions:
@@ -27,7 +27,7 @@ jobs:
           mkdir .unpack
           unzip -q gym-system-repository.zip -d .unpack
           rsync -a .unpack/ ./ --exclude='.git' --exclude='.github'
-          rm -rf .unpack gym-system-repository.zip source.b64 source.part*.txt
+          rm -rf .unpack gym-system-repository.zip source.b64 source.part*.txt TRIGGER_UPLOAD
 
       - name: Commit extracted project
         shell: bash
