@@ -3,7 +3,7 @@ name: Unpack Gym System Source
 on:
   push:
     paths:
-      - 'source.part*'
+      - 'source.part*.txt'
   workflow_dispatch:
 
 permissions:
@@ -21,12 +21,13 @@ jobs:
       - name: Rebuild source archive
         shell: bash
         run: |
-          cat source.part* > gym-system-repository.zip
+          cat source.part*.txt > source.b64
+          base64 -d source.b64 > gym-system-repository.zip
           rm -rf .unpack
           mkdir .unpack
           unzip -q gym-system-repository.zip -d .unpack
           rsync -a .unpack/ ./ --exclude='.git' --exclude='.github'
-          rm -rf .unpack gym-system-repository.zip source.part*
+          rm -rf .unpack gym-system-repository.zip source.b64 source.part*.txt
 
       - name: Commit extracted project
         shell: bash
