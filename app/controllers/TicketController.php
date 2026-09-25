@@ -8,7 +8,7 @@ class TicketController {
 
     private function verificarAuth() {
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /auth/index');
+            header('Location: ' . BASE_URL . '/auth/index');
             exit;
         }
     }
@@ -56,7 +56,7 @@ class TicketController {
 
         [$venta, $detalle] = $this->obtenerVenta($id);
         if (!$venta) {
-            header('Location: /pos/index');
+            header('Location: ' . BASE_URL . '/pos/index');
             exit;
         }
 
