@@ -33,7 +33,7 @@ class UsuariosController {
 
             $usuarioModel = new Usuario();
             if ($usuarioModel->crear($datos)) {
-                header('Location: /usuarios/index');
+                header('Location: ' . BASE_URL . '/usuarios/index');
             } else {
                 echo "Error al crear usuario.";
             }
@@ -60,7 +60,7 @@ class UsuariosController {
 
             $usuarioModel = new Usuario();
             if ($usuarioModel->actualizar($datos)) {
-                header('Location: /usuarios/index');
+                header('Location: ' . BASE_URL . '/usuarios/index');
             }
         }
     }
@@ -73,13 +73,13 @@ class UsuariosController {
         if ($id == $_SESSION['user_id']) {
             echo "<script>
                     alert('Seguridad: No puedes desactivar tu propia cuenta.'); 
-                    window.location.href='/usuarios/index';
+                    window.location.href='<?= BASE_URL ?>/usuarios/index';
                   </script>";
             return;
         }
 
         $usuarioModel = new Usuario();
         $usuarioModel->cambiarEstado($id, $estado);
-        header('Location: /usuarios/index');
+        header('Location: ' . BASE_URL . '/usuarios/index');
     }
 }
