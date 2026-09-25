@@ -32,7 +32,7 @@ class GastosController {
 
             $gastoModel = new Gasto();
             if ($gastoModel->agregar($datos)) {
-                header('Location: /gastos/index');
+                header('Location: ' . BASE_URL . '/gastos/index');
             }
         }
     }
@@ -48,7 +48,7 @@ class GastosController {
                 $gastoModel->anular($id, $motivo);
             }
         }
-        header('Location: /gastos/index?success=1');
+        header('Location: ' . BASE_URL . '/gastos/index?success=1');
         exit;
     }
 }
