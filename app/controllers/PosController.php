@@ -17,7 +17,7 @@ class PosController {
             session_start();
         }
         if (!isset($_SESSION['user_id']) || $_SESSION['user_rol'] == 'entrenador') {
-            header('Location: /auth/index');
+            header('Location: ' . BASE_URL . '/auth/index');
             exit();
         }
         $this->productoModel = new Producto();
@@ -38,7 +38,7 @@ class PosController {
         $cajaAbierta = $this->cajaModel->obtenerCajaAbierta($_SESSION['user_id']);
         if (!$cajaAbierta) {
             $_SESSION['error_message'] = "Debes abrir caja antes de realizar ventas.";
-            header('Location: /caja/index');
+            header('Location: ' . BASE_URL . '/caja/index');
             exit();
         }
 
@@ -99,7 +99,7 @@ class PosController {
         $_SESSION['pos_cart'] = [];
         echo json_encode(['status' => 'success']);
         if(!isset($_POST['ajax'])) {
-            header('Location: /pos/index');
+            header('Location: ' . BASE_URL . '/pos/index');
         }
     }
 
@@ -136,13 +136,13 @@ class PosController {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             
             if (empty($_SESSION['pos_cart'])) {
-                header('Location: /pos/index?error=carrito_vacio');
+                header('Location: ' . BASE_URL . '/pos/index?error=carrito_vacio');
                 exit();
             }
 
             $cajaAbierta = $this->cajaModel->obtenerCajaAbierta($_SESSION['user_id']);
             if (!$cajaAbierta) {
-                header('Location: /caja/index?error=caja_cerrada');
+                header('Location: ' . BASE_URL . '/caja/index?error=caja_cerrada');
                 exit();
             }
 
@@ -159,10 +159,10 @@ class PosController {
                 // Venta exitosa, limpiar carrito
                 $_SESSION['pos_cart'] = [];
                 // Redirigir a impresión de comprobante o mensaje de éxito
-                header('Location: /ticket/ver/' . $venta_id);
+                header('Location: ' . BASE_URL . '/ticket/ver/' . $venta_id);
                 exit();
             } else {
-                header('Location: /pos/index?error=error_procesar');
+                header('Location: ' . BASE_URL . '/pos/index?error=error_procesar');
                 exit();
             }
         }
