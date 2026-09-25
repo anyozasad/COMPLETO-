@@ -1,17 +1,15 @@
 <?php
 session_start();
 
-$scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '/index.php');
-$baseUrl = rtrim(str_replace('\\', '/', dirname($scriptName)), '/');
-if ($baseUrl === '.' || $baseUrl === '/') {
-    $baseUrl = '';
-}
-define('BASE_URL', $baseUrl);
+$script = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '/index.php');
+$base = rtrim(str_replace('\\', '/', dirname($script)), '/');
+if ($base === '.' || $base === '/') { $base = ''; }
+define('BASE_URL', $base);
 
 if (BASE_URL !== '') {
     header_register_callback(function () {
-        foreach (headers_list() as $headerLine) {
-            if (preg_match('~^Location:\\s*(/(?!/).*)$~i', $headerLine, $m)) {
+        foreach (headers_list() as $h) {
+            if (preg_match('~^Location:\\s*(/(?!/).*)$~i', $h, $m)) {
                 header_remove('Location');
                 header('Location: ' . BASE_URL . $m[1], true);
                 break;
@@ -20,22 +18,10 @@ if (BASE_URL !== '') {
     });
 
     ob_start(function ($html) {
-        $base = BASE_URL;
-        $html = preg_replace_callback(
-            '~\\b(href|src|action)=([\"\\'])/(?!/)~i',
-            fn($m) => $m[1] . '=' . $m[2] . $base . '/',
-            $html
-        );
-        $html = preg_replace_callback(
-            '~\\bfetch\\(\\s*([\"\\'])/(?!/)~i',
-            fn($m) => 'fetch(' . $m[1] . $base . '/',
-            $html
-        );
-        $html = preg_replace_callback(
-            '~((?:window\\.)?location(?:\\.href)?\\s*=\\s*)([\"\\'])/(?!/)~i',
-            fn($m) => $m[1] . $m[2] . $base . '/',
-            $html
-        );
+        $b = BASE_URL;
+        $html = preg_replace('~\\b(href|src|action)=(["\\'])/(?!/)~i', '$1=$2' . $b . '/', $html);
+        $html = preg_replace('~\\bfetch\\(\\s*(["\\'])/(?!/)~i', 'fetch($1' . $b . '/', $html);
+        $html = preg_replace('~((?:window\\.)?location(?:\\.href)?\\s*=\\s*)(["\\'])/(?!/)~i', '$1$2' . $b . '/', $html);
         return $html;
     });
 }
