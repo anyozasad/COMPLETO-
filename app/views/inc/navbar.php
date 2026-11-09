@@ -108,6 +108,12 @@ $is_active = function($path) use ($current_uri) {
                 </a>
 
                 <?php if($_rolActual === 'admin' || $_rolActual === 'recepcionista'): ?>
+                    <a class="list-group-item list-group-item-action rounded mb-1 <?= $is_active('/reservas') ?>" href="/reservas/index">
+                        <i class="fas fa-calendar-check w-20px text-center"></i> Reservas
+                    </a>
+                <?php endif; ?>
+
+                <?php if($_rolActual === 'admin' || $_rolActual === 'recepcionista'): ?>
                     <a class="list-group-item list-group-item-action rounded mb-1 <?= $is_active('/caja') ?>" href="/caja/index">
                         <i class="fas fa-cash-register w-20px text-center"></i> Caja
                     </a>
