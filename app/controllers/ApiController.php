@@ -83,7 +83,14 @@ class ApiController {
     }
     public function entrenador(): void {
         $this->solo('GET');
-        $this->responder(['ok'=>true,'entrenador'=>$this->portal->entrenador()]);
+        $entrenador=$this->portal->entrenador();
+        if($entrenador) {
+            $foto=basename((string)($entrenador['foto']??''));
+            $entrenador['foto_path']=$foto!=='' &&
+                is_file(__DIR__.'/../../public/img/entrenadores/'.$foto)
+                ? BASE_URL.'/img/entrenadores/'.rawurlencode($foto) : null;
+        }
+        $this->responder(['ok'=>true,'entrenador'=>$entrenador]);
     }
     public function registrar(): void {
         $this->solo('POST');
