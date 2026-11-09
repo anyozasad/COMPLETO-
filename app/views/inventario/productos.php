@@ -54,7 +54,9 @@ $config = Configuracion::getInfo();
                 'foto_subida' => 'No se pudo subir la imagen. Máximo 5 MB por archivo.',
                 'foto_formato' => 'La imagen debe ser JPG, PNG o WEBP válido.',
                 'foto_carpeta' => 'No se pudo crear la carpeta de imágenes.',
-                'guardar_producto' => 'No se pudo guardar el producto en la base de datos.'
+                'guardar_producto' => 'No se pudo guardar el producto en la base de datos.',
+                'stock_invalido' => 'El ajuste de stock debe tener una cantidad positiva.',
+                'stock_insuficiente' => 'No hay suficiente stock para esta salida o no existe el producto.'
               ];
             ?>
             <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
