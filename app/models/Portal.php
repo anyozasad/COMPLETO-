@@ -21,7 +21,7 @@ class Portal {
 
     public function registrar(string $nombre, string $dni, string $email,
                              string $password, string $telefono): int {
-        if ($nombre === '' || mb_strlen($nombre) > 100 ||
+        if ($nombre === '' || strlen($nombre) > 200 ||
             !preg_match('/^\d{8}$/', $dni) ||
             !filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 190 ||
             strlen($password) < 10 || strlen($password) > 72 ||
