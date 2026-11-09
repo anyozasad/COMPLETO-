@@ -19,6 +19,7 @@ class RevisionController {
         $socios = $modelo->sociosConActividad();
         $imagenesPendientes = $modelo->productosSinImagen();
         $estados = $modelo->reservasPorEstado();
+        $duplicados = $modelo->posiblesDuplicados();
 
         $cobrosInconsistentes = array_values(array_filter($cobros, static function ($v) {
             return (int)$v['lineas'] === 0 || (float)$v['diferencia'] > 0.01;
