@@ -101,6 +101,11 @@ $is_active = function($path) use ($current_uri) {
                 <a class="list-group-item list-group-item-action rounded mb-1 <?= $is_active('/asistencia') ?>" href="/asistencia/index">
                     <i class="fas fa-clock w-20px text-center"></i> Asistencia
                 </a>
+                <?php if(in_array($_rolActual, ['admin','entrenador'], true)): ?>
+                    <a class="list-group-item list-group-item-action rounded mb-1 <?= $is_active('/rutinas') ?>" href="/rutinas/index">
+                        <i class="fas fa-dumbbell w-20px text-center"></i> Rutinas por nivel
+                    </a>
+                <?php endif; ?>
                 
                 <p class="text-dark fw-bold ms-3 mt-4 mb-2 fs-6">Gestión</p>
                 <a class="list-group-item list-group-item-action rounded mb-1 <?= $is_active('/socios') ?>" href="/socios/index">
