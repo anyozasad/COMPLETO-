@@ -1,0 +1,96 @@
+name: Semana 11 - Navegación, BD y evidencias reales
+on:
+  push:
+    paths:
+      - 'app/**'
+      - 'public/**'
+      - 'tests/semana11_*'
+      - '.github/workflows/semana11-end-to-end.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  semana11-http-real:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: testroot
+          MYSQL_DATABASE: gym_system_ci
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -uroot -ptestroot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    env:
+      CI: 'true'
+      DB_HOST: '127.0.0.1'
+      DB_NAME: 'gym_system_ci'
+      DB_USER: 'root'
+      DB_PASS: 'testroot'
+      GYM_INITIAL_ADMIN_EMAIL: 'admin-ci@example.test'
+      GYM_INITIAL_ADMIN_PASSWORD: 'ClaveLargaSoloParaCI!2026'
+      TEST_BASE_URL: 'http://127.0.0.1:18080'
+    steps:
+      - name: Obtener aplicación
+        uses: actions/checkout@v4
+
+      - name: Instalar PHP 8.2 y dependencias
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_mysql, mbstring, fileinfo, gd
+          ini-values: display_errors=On,log_errors=On
+      - name: Instalar cliente MySQL
+        run: |
+          if ! command -v mysql >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y default-mysql-client
+          fi
+
+      - name: Preparar base de datos AISLADA
+        shell: bash
+        run: |
+          set -eu
+          mysql --protocol=tcp -h 127.0.0.1 -u root -ptestroot \
+            -D gym_system_ci < schema.sql
+          php tests/semana11_seed.php
+          mkdir -p reports
+          mysqldump --protocol=tcp -h 127.0.0.1 -u root -ptestroot \
+            --no-data --skip-comments gym_system_ci > reports/semana11_esquema_test.sql
+          find app public -type f | sort > reports/semana11_archivos.txt
+
+      - name: Ejecutar navegación HTTP entre dos sesiones y generar diagnósticos
+        shell: bash
+        run: |
+          set -eu
+          mkdir -p reports
+          cd public
+          php -S 127.0.0.1:18080 router.php \
+            > ../reports/semana11_servidor_php.log 2>&1 &
+          PHP_PID=$!
+          trap 'kill "$PHP_PID" 2>/dev/null || true' EXIT
+          cd ..
+          for i in $(seq 1 50); do
+            if curl -fsS http://127.0.0.1:18080/portal/login >/dev/null; then break; fi
+            sleep 0.3
+          done
+          python3 tests/semana11_http.py
+
+      - name: Publicar evidencias técnicas (sin datos personales)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: semana11-pruebas-http-mysql
+          path: |
+            reports/semana11_*.json
+            reports/semana11_esquema_test.sql
+            reports/semana11_archivos.txt
+            reports/semana11_servidor_php.log
+          retention-days: 30
+          if-no-files-found: warn
