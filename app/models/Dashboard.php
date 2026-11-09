@@ -50,21 +50,25 @@ class Dashboard {
 
     // 4. Tabla: Vencimientos cercanos
     public function obtenerVencimientosCercanos() {
-        $hoy = date('Y-m-d');
-        $limite = date('Y-m-d', strtotime($hoy . ' + 7 days'));
+        $hoy=date('Y-m-d');
+        $limite=date('Y-m-d',strtotime('+7 days'));
 
-        $query = "SELECT s.fecha_fin, so.nombre as socio, p.nombre as plan 
-                  FROM suscripciones s
-                  INNER JOIN socios so ON s.socio_id = so.id
-                  INNER JOIN planes p ON s.plan_id = p.id
-                  WHERE s.fecha_fin BETWEEN :hoy AND :limite
-                  AND s.estado = 'activa'
-                  ORDER BY s.fecha_fin ASC";
-
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':hoy', $hoy);
-        $stmt->bindParam(':limite', $limite);
-        $stmt->execute();
+        // Un aviso por socio para no duplicar renovaciones.
+        $sql="SELECT su.fecha_fin, so.nombre AS socio, p.nombre AS plan
+              FROM suscripciones su
+              JOIN socios so ON su.socio_id=so.id
+              JOIN planes p ON p.id=su.plan_id
+              WHERE su.fecha_fin BETWEEN :hoy AND :limite
+                AND su.estado='activa' AND so.estado='activo'
+                AND NOT EXISTS (
+                  SELECT 1 FROM suscripciones n
+                  WHERE n.socio_id=su.socio_id AND n.estado='activa'
+                    AND (n.fecha_fin>su.fecha_fin OR
+                        (n.fecha_fin=su.fecha_fin AND n.id>su.id))
+                )
+              ORDER BY su.fecha_fin ASC, so.nombre ASC";
+        $stmt=$this->conn->prepare($sql);
+        $stmt->execute(['hoy'=>$hoy,'limite'=>$limite]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
