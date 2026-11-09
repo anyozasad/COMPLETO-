@@ -118,11 +118,13 @@ Fecha de análisis de código: 09/11/2026. Referencias: Bitácora EFSRT de 11 se
 
 | N.º | Actividad de la bitácora | Código o evidencia técnica | Estado de verificación |
 |---:|---|---|---|
-| 51 | Probar login, registro y navegación del usuario | AuthController.php; PortalController.php; tests/portal_smoke.php | Probado en modelos; flujo manual pendiente |
-| 52 | Probar módulos principales del dashboard | CI; /revision/index; reportes de estados | Parcial: interacción visual end-to-end pendiente |
-| 53 | Revisar duplicados y datos faltantes de BD | RevisionSemana05::posiblesDuplicados y productosSinImagen | Aplicado; corrección de datos reales pendiente |
-| 54 | Corregir últimos detalles visuales | CSS compartido; archivos locales; módulos navegables | Pendiente de validación visual en equipo |
-| 55 | Organizar evidencias y respaldo | scripts/respaldo_efsrt.ps1; CI, documento de trazabilidad | Script incluido; respaldo y capturas reales por generar |
+| 51 | Probar login, registro y navegación del usuario | AuthController.php; PortalController.php; tests/semana11_http.py; tests/semana11_browser.mjs | Implementado y probado en HTTP/Chromium CI; instalación final pendiente |
+| 52 | Probar módulos principales del dashboard | Rutas de 11 módulos; tests/semana11_http.py; capturas de navegador | Navegación de dashboard comprobada en CI; prueba manual en equipo pendiente |
+| 53 | Revisar duplicados y datos faltantes de BD | CierreSistema.php; /cierre/index; tests/semana11_integridad.php | Detección en MySQL implementada; registros de empresa no se borran automáticamente |
+| 54 | Corregir últimos detalles visuales | CSS local; navbar activo en subcarpetas; tablas en español sin CDN; pruebas Chromium | Mejoras y capturas de CI; comparar diseño final en equipo |
+| 55 | Organizar evidencias y respaldo | /cierre/exportar; ZIP y PNG de CI; scripts/respaldo_efsrt.ps1; docs/SEMANA_11_CIERRE_FUNCIONAL.md | Evidencia técnica generada; respaldo SQL real y firmas pendientes en instalación |
+
+Consulta también [Semana 11: cierre funcional y pruebas](SEMANA_11_CIERRE_FUNCIONAL.md) y el [workflow de navegación y capturas](https://github.com/anyozasad/COMPLETO-/actions/workflows/semana11-end-to-end.yml).
 
 ## Evidencias que debe verificar el usuario en su equipo
 
