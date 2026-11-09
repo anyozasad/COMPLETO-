@@ -51,18 +51,21 @@ try {
     $p->execute();
     $limpiarProductos[]=(int)$pdo->lastInsertId();
 
+    $planId=(int)$pdo->query("SELECT id FROM planes ORDER BY id ASC LIMIT 1")->fetchColumn();
+    $adminId=(int)$pdo->query("SELECT id FROM usuarios WHERE rol='admin' ORDER BY id ASC LIMIT 1")->fetchColumn();
+    validar($planId>0 && $adminId>0,'plan y administrador de pruebas presentes');
     $m=$pdo->prepare("INSERT INTO suscripciones
         (socio_id,plan_id,fecha_inicio,fecha_fin,estado)
-        VALUES (:socio,1,'2026-12-20','2026-11-20','activa')");
-    $m->execute(['socio'=>$limpiarSocios[0]]);
+        VALUES (:socio,:plan,'2026-12-20','2026-11-20','activa')");
+    $m->execute(['socio'=>$limpiarSocios[0],'plan'=>$planId]);
     $limpiarSuscripciones[]=(int)$pdo->lastInsertId();
-    $m->execute(['socio'=>$limpiarSocios[0]]);
+    $m->execute(['socio'=>$limpiarSocios[0],'plan'=>$planId]);
     $limpiarSuscripciones[]=(int)$pdo->lastInsertId();
 
     $reserva=new Reserva();
     $idsAntes=array_map(static fn($r)=>(int)$r['id'],$reserva->obtenerTodos());
     $datos=[
-        'id'=>0,'usuario_id'=>1,'socio_id'=>$limpiarSocios[0],
+        'id'=>0,'usuario_id'=>$adminId,'socio_id'=>$limpiarSocios[0],
         'fecha'=>'2026-12-31','hora'=>'18:30:00',
         'tipo'=>'sesion','estado'=>'pendiente','observaciones'=>'Prueba de auditoría'
     ];
