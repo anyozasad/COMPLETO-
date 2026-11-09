@@ -165,6 +165,9 @@ $is_active = function($path) use ($current_uri) {
                     <a class="list-group-item list-group-item-action rounded mb-1 <?= $is_active('/usuarios') ?>" href="/usuarios/index">
                         <i class="fas fa-user-shield w-20px text-center"></i> Usuarios
                     </a>
+                    <a class="list-group-item list-group-item-action rounded mb-1 <?= $is_active('/entrenador') ?>" href="/entrenador/index">
+                        <i class="fas fa-user-tie w-20px text-center"></i> Entrenador principal
+                    </a>
                     <a class="list-group-item list-group-item-action rounded mb-1 <?= $is_active('/mantenimiento') ?>" href="/mantenimiento/index">
                         <i class="fas fa-tools w-20px text-center"></i> Mantenimiento
                     </a>
