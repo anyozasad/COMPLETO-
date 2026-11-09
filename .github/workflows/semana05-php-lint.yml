@@ -29,6 +29,12 @@ on:
       - 'app/models/Asistencia.php'
       - 'app/controllers/AsistenciaController.php'
       - 'app/models/Dashboard.php'
+      - 'app/models/TokenApi.php'
+      - 'app/controllers/ApiController.php'
+      - 'app/controllers/AuthController.php'
+      - 'app/views/auth/login.php'
+      - 'app/models/Socio.php'
+      - 'app/views/home/index.php'
       - '.github/workflows/semana05-php-lint.yml'
   workflow_dispatch:
 
@@ -74,6 +80,12 @@ jobs:
           php -l app/models/Asistencia.php
           php -l app/controllers/AsistenciaController.php
           php -l app/models/Dashboard.php
+          php -l app/models/TokenApi.php
+          php -l app/controllers/ApiController.php
+          php -l app/controllers/AuthController.php
+          php -l app/views/auth/login.php
+          php -l app/models/Socio.php
+          php -l app/views/home/index.php
           php -l tests/semana05_smoke.php
 
   integracion-mysql:
