@@ -92,4 +92,94 @@ verificar($productos->actualizar([
 verificar($productos->obtenerPorId($pid)['foto'] === $foto,
     'imagen permanece tras editar producto sin cambiar la foto');
 
+
+// Prueba de relación de compras, pagos y caja contra la BD (actividad 14/10).
+$db->exec("CREATE TABLE planes (
+    id INT AUTO_INCREMENT PRIMARY KEY, nombre VARCHAR(50) NOT NULL,
+    precio DECIMAL(10,2) NOT NULL, duracion_dias INT NOT NULL
+) ENGINE=InnoDB");
+$db->exec("CREATE TABLE suscripciones (
+    id INT AUTO_INCREMENT PRIMARY KEY, socio_id INT,
+    plan_id INT, fecha_inicio DATE, fecha_fin DATE,
+    estado ENUM('activa','vencida') DEFAULT 'activa'
+) ENGINE=InnoDB");
+$db->exec("CREATE TABLE cajas (
+    id INT AUTO_INCREMENT PRIMARY KEY, usuario_id INT NOT NULL,
+    monto_inicial DECIMAL(10,2) NOT NULL DEFAULT 0,
+    total_ventas DECIMAL(10,2) NOT NULL DEFAULT 0,
+    estado ENUM('abierta','cerrada') DEFAULT 'abierta'
+) ENGINE=InnoDB");
+$db->exec("CREATE TABLE ventas (
+    id INT AUTO_INCREMENT PRIMARY KEY, caja_id INT NOT NULL,
+    socio_id INT NULL, total DECIMAL(10,2) NOT NULL,
+    descuento DECIMAL(10,2) NOT NULL DEFAULT 0,
+    metodo_pago ENUM('efectivo','tarjeta','transferencia') DEFAULT 'efectivo',
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB");
+$db->exec("CREATE TABLE detalle_ventas (
+    id INT AUTO_INCREMENT PRIMARY KEY, venta_id INT NOT NULL,
+    producto_id INT NOT NULL, cantidad INT NOT NULL,
+    precio_unitario DECIMAL(10,2) NOT NULL,
+    subtotal DECIMAL(10,2) NOT NULL
+) ENGINE=InnoDB");
+$db->exec("INSERT INTO planes (nombre,precio,duracion_dias) VALUES ('Mensual',60,30)");
+$db->exec("INSERT INTO suscripciones (socio_id,plan_id,fecha_inicio,fecha_fin)
+    VALUES (1,1,'2026-11-01','2026-12-01')");
+$db->exec("INSERT INTO cajas (usuario_id,monto_inicial) VALUES (1,50)");
+
+require_once __DIR__ . '/../app/models/Venta.php';
+require_once __DIR__ . '/../app/models/RevisionSemana05.php';
+
+$ventas = new Venta();
+$ventaId = $ventas->registrarVenta(1, 1, 80, 'efectivo', [
+    ['id' => $pid, 'cantidad' => 2, 'precio' => 42]
+], 4);
+verificar(is_int($ventaId) && $ventaId > 0, 'venta registrada para socio vinculado');
+verificar((int)$productos->obtenerPorId($pid)['stock'] === 2,
+    'venta descuenta el stock de forma atómica');
+verificar(abs((float)$db->query("SELECT total_ventas FROM cajas WHERE id=1")->fetchColumn() - 80) < 0.01,
+    'caja registra exactamente el total cobrado');
+verificar($ventas->registrarVenta(1,1,126,'tarjeta', [
+    ['id'=>$pid,'cantidad'=>3,'precio'=>42]
+],0) === false, 'se rechaza venta si falta stock');
+verificar($ventas->registrarVenta(1,1,10,'efectivo', [
+    ['id'=>$pid,'cantidad'=>1,'precio'=>42]
+],0) === false, 'se rechaza total manipulado o desactualizado');
+verificar((int)$db->query("SELECT COUNT(*) FROM ventas")->fetchColumn() === 1,
+    'no quedan ventas parciales tras errores');
+verificar((int)$productos->obtenerPorId($pid)['stock'] === 2,
+    'los errores no alteran stock');
+
+$revision = new RevisionSemana05();
+$resumen = $revision->resumen();
+verificar((int)$resumen['socios_total']===1 && (int)$resumen['suscripciones_total']===1 &&
+    (int)$resumen['ventas_total']===1 && abs((float)$resumen['monto_ventas']-80)<0.01,
+    'resumen reúne socios, suscripciones y ventas sin mezclar cobros');
+$cobros = $revision->pagosVsSocios();
+verificar(count($cobros) === 1 && $cobros[0]['socio_nombre'] === 'Socio de prueba' &&
+    abs((float)$cobros[0]['total_calculado'] - 80) < 0.01 &&
+    abs((float)$cobros[0]['diferencia']) < 0.01,
+    'conciliación entre venta, detalle, descuento y socio');
+$cajaReportada = $revision->comparacionCajas();
+verificar(count($cajaReportada)===1 &&
+    abs((float)$cajaReportada[0]['diferencia']) < 0.01,
+    'conciliación de caja con ventas registradas');
+$sociosRevisados = $revision->sociosConActividad();
+verificar(count($sociosRevisados)===1 && (int)$sociosRevisados[0]['compras']===1 &&
+    (int)$sociosRevisados[0]['suscripciones']===1 &&
+    abs((float)$sociosRevisados[0]['total_compras']-80)<0.01,
+    'relaciones de socios con compras y suscripciones sin montos duplicados');
+verificar(count($revision->productosSinImagen())===0,
+    'auditoría confirma imágenes locales asignadas');
+verificar(count($revision->reservasPorEstado())===0,
+    'resumen de estados de reserva funciona aunque no existan registros');
+
+$db->exec("UPDATE ventas SET total = 70 WHERE id = " . (int)$ventaId);
+verificar(abs((float)$revision->pagosVsSocios()[0]['diferencia']-10)<0.01,
+    'auditoría detecta diferencias de pago en la BD');
+verificar(abs((float)$revision->comparacionCajas()[0]['diferencia']-10)<0.01,
+    'auditoría detecta descuadre de caja');
+$db->exec("UPDATE ventas SET total = 80 WHERE id = " . (int)$ventaId);
+
+
 echo "\nPRUEBAS DE SEMANA 5 COMPLETADAS CORRECTAMENTE\n";
