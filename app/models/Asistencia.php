@@ -10,10 +10,27 @@ class Asistencia {
 
     // Registrar una nueva entrada
     public function registrar($socio_id) {
-        $query = "INSERT INTO " . $this->table_name . " (socio_id) VALUES (:id)";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $socio_id);
-        return $stmt->execute();
+        $id = filter_var($socio_id, FILTER_VALIDATE_INT);
+        if ($id === false || $id < 1) return false;
+
+        // Evitar accesos de socios inactivos, vencidos o futuros y entradas
+        // repetidas en el mismo día; hacerlo en la propia consulta SQL.
+        $sql = "INSERT INTO asistencias (socio_id)
+                SELECT s.id FROM socios s
+                WHERE s.id=:id1 AND s.estado='activo'
+                AND EXISTS (
+                    SELECT 1 FROM suscripciones su
+                    WHERE su.socio_id=s.id AND su.estado='activa'
+                    AND su.fecha_inicio <= CURRENT_DATE()
+                    AND su.fecha_fin >= CURRENT_DATE()
+                )
+                AND NOT EXISTS (
+                    SELECT 1 FROM asistencias a
+                    WHERE a.socio_id=s.id AND DATE(a.fecha_hora)=CURRENT_DATE()
+                )";
+        $stmt=$this->conn->prepare($sql);
+        $stmt->execute(['id1'=>$id]);
+        return $stmt->rowCount() === 1;
     }
 
     // Ver quiénes han entrado hoy (para mostrar en la pantalla)
