@@ -127,6 +127,13 @@ class PagoSuscripcion {
         }
     }
 
+    public function totalPagado(int $suscripcionId): float {
+        $stmt=$this->db->prepare("SELECT COALESCE(SUM(monto),0)
+            FROM pagos_suscripciones WHERE suscripcion_id=:id");
+        $stmt->execute(['id'=>$suscripcionId]);
+        return (float)$stmt->fetchColumn();
+    }
+
     public function totalMesActual(): float {
         $stmt=$this->db->query("SELECT COALESCE(SUM(monto),0)
             FROM pagos_suscripciones
