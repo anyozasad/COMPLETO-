@@ -137,6 +137,14 @@ footer{text-align:center;padding:25px;border-top:1px solid var(--line)}
 <div class="panel">
 <h3>Tu entrenador</h3>
 <?php if($entrenador): ?>
+<?php $fotoEntrenador=(string)($entrenador['foto']??'');
+$fotoValida=$fotoEntrenador!=='' && basename($fotoEntrenador)===$fotoEntrenador &&
+  is_file(__DIR__.'/../../../public/img/entrenadores/'.$fotoEntrenador); ?>
+<?php if($fotoValida): ?>
+<img src="<?= $esc($base.'/img/entrenadores/'.rawurlencode($fotoEntrenador)) ?>"
+     alt="Fotografía del entrenador principal" loading="lazy"
+     style="width:100%;max-height:270px;object-fit:contain;border-radius:12px">
+<?php endif; ?>
 <p><?= $esc($entrenador['nombre']) ?></p>
 <?php else: ?><p class="meta">El gimnasio todavía no ha registrado un entrenador activo.</p><?php endif; ?>
 <p class="small">La información se consulta desde la administración; no se muestran entrenadores inventados.</p>
