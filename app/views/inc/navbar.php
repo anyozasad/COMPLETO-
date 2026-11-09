@@ -8,7 +8,11 @@ $config = Configuracion::getInfo();
 $_rolActual = $_SESSION['user_rol'] ?? '';
 
 // 3. Helper para clase activa
-$current_uri = $_SERVER['REQUEST_URI'] ?? '';
+$current_uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+if (defined('BASE_URL') && BASE_URL !== '' &&
+    ($current_uri === BASE_URL || strpos($current_uri, BASE_URL . '/') === 0)) {
+    $current_uri = substr($current_uri, strlen(BASE_URL)) ?: '/';
+}
 $is_active = function($path) use ($current_uri) {
     // Check if the current URI starts with the path (e.g., /socios matches /socios/index and /socios/crear)
     if ($path === '/home/index') {
@@ -18,7 +22,7 @@ $is_active = function($path) use ($current_uri) {
 };
 ?>
 
-<link rel="stylesheet" href="/css/gym-theme.css?v=<?= time() ?>">
+<link rel="stylesheet" href="/css/gym-theme.css?v=<?= @filemtime(__DIR__ . '/../../../public/css/gym-theme.css') ?: 1 ?>">
 <style>
   /* Base wrapper logic for mobile sidebar - Theme styles are in gym-theme.css */
   #sidebar-wrapper {
@@ -86,9 +90,11 @@ $is_active = function($path) use ($current_uri) {
             <a href="/asistencia/index" class="btn rounded-circle shadow p-0 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; background: linear-gradient(135deg, #EC4899, #BE185D); border:none;">
                 <i class="fas fa-bell text-white"></i>
             </a>
+            <?php if ($_rolActual === 'admin'): ?>
             <a href="/configuracion/index" class="btn rounded-circle shadow p-0 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; background: linear-gradient(135deg, #F97316, #D97706); border:none;">
                 <i class="fas fa-cog text-white"></i>
             </a>
+            <?php endif; ?>
         </div>
         
         <div id="sidebar-nav-scroll">
