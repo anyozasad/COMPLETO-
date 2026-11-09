@@ -75,13 +75,23 @@ class Producto {
     }
 
     public function actualizarStock($id, $cantidad, $operacion = 'restar') {
-        if ($operacion === 'restar') {
-            $stmt = $this->conn->prepare("UPDATE productos SET stock = stock - :cantidad WHERE id = :id");
-        } else {
-            $stmt = $this->conn->prepare("UPDATE productos SET stock = stock + :cantidad WHERE id = :id");
+        $id = (int)$id;
+        $cantidad = (int)$cantidad;
+        if ($id < 1 || $cantidad < 1 || !in_array($operacion, ['sumar', 'restar'], true)) {
+            return false;
         }
-        $stmt->bindParam(':cantidad', $cantidad, PDO::PARAM_INT);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        return $stmt->execute();
+        if ($operacion === 'restar') {
+            $stmt = $this->conn->prepare("UPDATE productos
+                SET stock = stock - :cantidad
+                WHERE id = :id AND stock >= :minimo");
+            $stmt->bindValue(':minimo', $cantidad, PDO::PARAM_INT);
+        } else {
+            $stmt = $this->conn->prepare("UPDATE productos
+                SET stock = stock + :cantidad WHERE id = :id");
+        }
+        $stmt->bindValue(':cantidad', $cantidad, PDO::PARAM_INT);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->rowCount() === 1;
     }
 }
