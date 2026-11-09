@@ -1,4 +1,4 @@
-name: Verificar PHP - Semana 05
+name: Verificar PHP - Proyecto EFSRT
 on:
   push:
     paths:
@@ -15,6 +15,10 @@ on:
       - 'app/views/revision/index.php'
       - 'app/models/Venta.php'
       - 'tests/semana05_smoke.php'
+      - 'app/models/Portal.php'
+      - 'app/controllers/PortalController.php'
+      - 'app/views/portal/index.php'
+      - 'tests/portal_smoke.php'
       - '.github/workflows/semana05-php-lint.yml'
   workflow_dispatch:
 
@@ -46,6 +50,10 @@ jobs:
           php -l app/controllers/RevisionController.php
           php -l app/views/revision/index.php
           php -l app/models/Venta.php
+          php -l app/models/Portal.php
+          php -l app/controllers/PortalController.php
+          php -l app/views/portal/index.php
+          php -l tests/portal_smoke.php
           php -l tests/semana05_smoke.php
 
   integracion-mysql:
@@ -72,6 +80,35 @@ jobs:
           extensions: pdo_mysql, fileinfo, gd
       - name: Comprobar reservas, fotos y control de stock
         run: php tests/semana05_smoke.php
+        env:
+          DB_TEST_HOST: 127.0.0.1
+          DB_TEST_USER: root
+          DB_TEST_PASS: testroot
+          DB_TEST_NAME: gym_system
+
+  portal-mysql:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: testroot
+          MYSQL_DATABASE: gym_system
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -uroot -ptestroot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_mysql, mbstring, fileinfo
+      - name: Probar sincronización portal-dashboard
+        run: php tests/portal_smoke.php
         env:
           DB_TEST_HOST: 127.0.0.1
           DB_TEST_USER: root
