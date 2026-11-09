@@ -145,8 +145,12 @@ footer{text-align:center;padding:25px;border-top:1px solid var(--line)}
 <h3>Mi rutina</h3>
 <?php if(!$logueado): ?>
 <p class="meta">Inicia sesión para consultar la rutina asignada a tu cuenta.</p>
-<?php elseif(!$rutina): ?>
-<p class="meta">Aún no tienes una rutina asignada. El entrenador puede registrarla en Seguimiento.</p>
+<?php elseif(!$rutina && !$programa): ?>
+<p class="meta">Aún no tienes una rutina asignada. El entrenador puede registrarla en Seguimiento o Rutinas por nivel.</p>
+<?php elseif(!$rutina && $programa): ?>
+<p class="meta">Nivel: <?= $esc(ucfirst($programa['nivel'])) ?> · Tipo: <?= $esc(ucfirst($programa['tipo'])) ?></p>
+<p><?= $esc(RutinaRecomendada::propuesta($programa['nivel'],$programa['tipo'],(int)date('N'))) ?></p>
+<p class="small">Próxima revisión: <?= $esc($programa['fecha_revision']) ?>. Consulta con el entrenador antes de aumentar la intensidad.</p>
 <?php else:
 $dia = (int)date('N');
 $campo = $dia <= 6 ? 'dia'.$dia : null;
