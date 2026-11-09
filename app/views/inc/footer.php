@@ -49,7 +49,21 @@
         // 1. Inicializar DataTables (skip tables with data-no-datatable)
         $('.table-data:not([data-no-datatable])').DataTable({
             "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+                "decimal": ",",
+                "thousands": ".",
+                "emptyTable": "No hay registros disponibles",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                "infoEmpty": "Mostrando 0 registros",
+                "infoFiltered": "(de _MAX_ registros totales)",
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "search": "Buscar:",
+                "zeroRecords": "No se encontraron coincidencias",
+                "paginate": {
+                    "first": "Primero", "last": "Último",
+                    "next": "Siguiente", "previous": "Anterior"
+                }
             },
             "pageLength": 10,
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]],
@@ -180,7 +194,10 @@
             var scrollEl = $('#sidebar-nav-scroll')[0];
             var activeEl = $activeItem[0];
             // Centrar el elemento en el contenedor
-            scrollEl.scrollTop = activeEl.offsetTop - (scrollEl.clientHeight / 2) + (activeEl.clientHeight / 2);
+            if (scrollEl && activeEl) {
+                scrollEl.scrollTop = activeEl.offsetTop -
+                    (scrollEl.clientHeight / 2) + (activeEl.clientHeight / 2);
+            }
         }
 
         // 2. Lógica para SweetAlert al Eliminar/Desactivar
