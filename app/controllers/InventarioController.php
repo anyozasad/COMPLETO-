@@ -168,14 +168,23 @@ class InventarioController {
     }
 
     public function ajusteStock() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $id = $_POST['producto_id'];
-            $cantidad = $_POST['cantidad'];
-            $operacion = $_POST['operacion']; // sumar o restar
-            
-            $this->productoModel->actualizarStock($id, $cantidad, $operacion);
-            header('Location: ' . BASE_URL . '/inventario/productos?success=stock');
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            return;
+        }
+        $id = filter_var($_POST['producto_id'] ?? null, FILTER_VALIDATE_INT);
+        $cantidad = filter_var($_POST['cantidad'] ?? null, FILTER_VALIDATE_INT);
+        $operacion = $_POST['operacion'] ?? '';
+        if ($id === false || $id < 1 || $cantidad === false || $cantidad < 1 ||
+            !in_array($operacion, ['sumar', 'restar'], true)) {
+            header('Location: ' . BASE_URL . '/inventario/productos?error=stock_invalido');
             exit();
         }
+        if (!$this->productoModel->actualizarStock($id, $cantidad, $operacion)) {
+            header('Location: ' . BASE_URL . '/inventario/productos?error=stock_insuficiente');
+            exit();
+        }
+        header('Location: ' . BASE_URL . '/inventario/productos?success=stock');
+        exit();
     }
 }
