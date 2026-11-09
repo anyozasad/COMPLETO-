@@ -148,6 +148,9 @@ $is_active = function($path) use ($current_uri) {
                     <a class="list-group-item list-group-item-action rounded mb-1 <?= $is_active('/reportes') ?>" href="/reportes/index">
                         <i class="fas fa-chart-line w-20px text-center"></i> Reportes
                     </a>
+                    <a class="list-group-item list-group-item-action rounded mb-1 <?= $is_active('/revision') ?>" href="/revision/index">
+                        <i class="fas fa-clipboard-check w-20px text-center"></i> Verificación Semana 5
+                    </a>
                     <a class="list-group-item list-group-item-action rounded mb-1 <?= $is_active('/asistencia/reporte') ?>" href="/asistencia/reporte">
                         <i class="fas fa-clipboard-list w-20px text-center"></i> Rep. Asistencias
                     </a>
