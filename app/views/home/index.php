@@ -91,6 +91,15 @@
 
         <?php if (isset($_SESSION['user_rol']) && $_SESSION['user_rol'] == 'admin'): ?>
 
+            <?php if (!empty($vencimientos)): ?>
+            <div class="alert alert-warning d-flex flex-wrap align-items-center justify-content-between gap-2 border-0 shadow-sm mb-4" role="alert">
+                <span><i class="fas fa-bell me-2"></i>
+                <strong><?= count($vencimientos) ?> <?= count($vencimientos) === 1 ? 'socio tiene' : 'socios tienen' ?> una membresía por vencer en los próximos 7 días.</strong>
+                Revisa las fechas y realiza el seguimiento correspondiente.</span>
+                <a href="/notificaciones/index" class="btn btn-sm btn-outline-dark fw-bold">Revisar alertas</a>
+            </div>
+            <?php endif; ?>
+
             <!-- ── QUICK ACCESS ROW ──────────────────────────── -->
             <div class="row g-3 mb-4">
                 <div class="col-12">
