@@ -1,6 +1,9 @@
 <IfModule mod_rewrite.c>
     Options -Multiviews
     RewriteEngine On
+
+    # Conservar Authorization: Bearer para API móvil en Apache/XAMPP
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
     
     # Si el archivo o carpeta solicitada NO existe físicamente...
     RewriteCond %{REQUEST_FILENAME} !-f
