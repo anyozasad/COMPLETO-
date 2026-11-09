@@ -46,6 +46,22 @@ $config = Configuracion::getInfo();
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         <?php endif; ?>
+        <?php if (isset($_GET['error'])): ?>
+            <?php
+              $mensajesError = [
+                'datos_invalidos' => 'Revisa la categoría, nombre, precios y stock del producto.',
+                'foto_no_encontrada' => 'La fotografía seleccionada no existe en la carpeta local.',
+                'foto_subida' => 'No se pudo subir la imagen. Máximo 5 MB por archivo.',
+                'foto_formato' => 'La imagen debe ser JPG, PNG o WEBP válido.',
+                'foto_carpeta' => 'No se pudo crear la carpeta de imágenes.',
+                'guardar_producto' => 'No se pudo guardar el producto en la base de datos.'
+              ];
+            ?>
+            <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
+                <?= htmlspecialchars($mensajesError[$_GET['error']] ?? 'No se pudo completar la operación.', ENT_QUOTES, 'UTF-8') ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
 
         <!-- Products Table -->
         <div class="table-responsive mt-2">
@@ -66,8 +82,8 @@ $config = Configuracion::getInfo();
                             <?php foreach ($productos as $p): ?>
                             <tr>
                                 <td>
-                                    <?php if(!empty($p['foto'])): ?>
-                                        <img src="/img/productos/<?= $p['foto'] ?>" class="rounded-circle border" width="45" height="45" style="object-fit:cover;">
+                                    <?php if (!empty($p['foto']) && is_file(__DIR__ . '/../../../public/img/productos/' . basename($p['foto']))): ?>
+                                        <img src="<?= htmlspecialchars(BASE_URL . '/img/productos/' . rawurlencode(basename($p['foto'])), ENT_QUOTES, 'UTF-8') ?>" alt="Foto de <?= htmlspecialchars($p['nombre'], ENT_QUOTES, 'UTF-8') ?>" class="rounded-circle border" width="45" height="45" style="object-fit:cover;">
                                     <?php else: ?>
                                         <div class="rounded-circle bg-light d-flex align-items-center justify-content-center border" style="width:45px;height:45px;">
                                             <i class="fas fa-box text-muted"></i>
@@ -117,6 +133,7 @@ $config = Configuracion::getInfo();
                                             data-compra="<?= $p['precio_compra'] ?>"
                                             data-venta="<?= $p['precio_venta'] ?>"
                                             data-stock="<?= $p['stock'] ?>"
+                                            data-foto="<?= htmlspecialchars((string)($p['foto'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
                                             data-bs-toggle="modal" data-bs-target="#modalProducto" title="Editar">
                                         <i class="fas fa-edit"></i>
                                     </button>
@@ -182,8 +199,22 @@ $config = Configuracion::getInfo();
                                 <label for="prod_stock" class="text-muted ms-2"><i class="fas fa-cubes me-2"></i>Stock Inicial</label>
                             </div>
                             <div class="col-12">
-                                <label class="form-label text-muted fw-bold ms-1" style="font-size: 0.9rem;"><i class="fas fa-image me-2"></i>Foto del Producto</label>
-                                <input type="file" class="form-control form-control-lg rounded-3 border-light shadow-sm" name="foto" accept="image/*">
+                                <label for="prod_foto" class="form-label text-muted fw-bold ms-1" style="font-size: 0.9rem;"><i class="fas fa-image me-2"></i>Foto del Producto</label>
+                                <input type="file" id="prod_foto" class="form-control form-control-lg rounded-3 border-light shadow-sm" name="foto" accept="image/jpeg,image/png,image/webp">
+                                <small class="text-muted">JPG, PNG o WEBP, hasta 5 MB. Se guardará dentro del proyecto y funcionará sin Internet.</small>
+                            </div>
+                            <div class="col-12">
+                                <label for="prod_foto_existente" class="form-label text-muted fw-bold ms-1">O seleccionar una imagen ya guardada</label>
+                                <select name="foto_existente" id="prod_foto_existente" class="form-select rounded-3">
+                                    <option value="">Conservar la foto actual o subir una nueva</option>
+                                    <?php foreach ($imagenesDisponibles as $nombreImagen): ?>
+                                        <option value="<?= htmlspecialchars($nombreImagen, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($nombreImagen, ENT_QUOTES, 'UTF-8') ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <div id="prod_foto_preview_container" class="mt-3" style="display:none;">
+                                    <img id="prod_foto_preview" alt="Vista previa del producto" width="128" height="128" class="rounded-3 border" style="object-fit:cover;">
+                                    <p class="small text-muted mt-1 mb-0">Vista previa de la fotografía que verá el usuario.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -250,6 +281,50 @@ $config = Configuracion::getInfo();
 
     <script>
         $(document).ready(function() {
+            const rutaImagen = <?= json_encode(BASE_URL . '/img/productos/', JSON_UNESCAPED_SLASHES) ?>;
+            let urlTemporalFoto = null;
+
+            function mostrarFotoExistente(nombre) {
+                if (urlTemporalFoto) {
+                    URL.revokeObjectURL(urlTemporalFoto);
+                    urlTemporalFoto = null;
+                }
+                const vista = $('#prod_foto_preview');
+                if (nombre) {
+                    vista.attr('src', rutaImagen + encodeURIComponent(nombre));
+                    $('#prod_foto_preview_container').show();
+                } else {
+                    vista.removeAttr('src');
+                    $('#prod_foto_preview_container').hide();
+                }
+            }
+
+            $('#prod_foto_existente').on('change', function() {
+                $('#prod_foto').val('');
+                mostrarFotoExistente(this.value);
+            });
+
+            $('#prod_foto').on('change', function() {
+                const archivo = this.files?.[0];
+                if (!archivo) {
+                    mostrarFotoExistente($('#prod_foto_existente').val());
+                    return;
+                }
+                if (!['image/jpeg', 'image/png', 'image/webp'].includes(archivo.type) || archivo.size > 5 * 1024 * 1024) {
+                    alert('Selecciona una imagen JPG, PNG o WEBP de máximo 5 MB.');
+                    $(this).val('');
+                    return;
+                }
+                if (urlTemporalFoto) URL.revokeObjectURL(urlTemporalFoto);
+                urlTemporalFoto = URL.createObjectURL(archivo);
+                $('#prod_foto_preview').attr('src', urlTemporalFoto);
+                $('#prod_foto_preview_container').show();
+            });
+
+            $('#prod_foto_preview').on('error', function() {
+                $('#prod_foto_preview_container').hide();
+            });
+
             // Editar producto - llenar modal
             $('.edit-btn').click(function() {
                 $('#modalProdTitleText').text('Editar Producto');
@@ -262,6 +337,9 @@ $config = Configuracion::getInfo();
                 $('#prod_compra').val($(this).data('compra'));
                 $('#prod_venta').val($(this).data('venta'));
                 $('#prod_stock').val($(this).data('stock'));
+                const fotoActual = $(this).attr('data-foto') || '';
+                $('#prod_foto_existente').val(fotoActual);
+                mostrarFotoExistente(fotoActual);
             });
 
             // Limpiar al cerrar
@@ -271,6 +349,7 @@ $config = Configuracion::getInfo();
                 $('#modalProdIcon').removeClass('fa-edit text-warning').addClass('fa-box text-primary');
                 this.querySelector('form').reset();
                 $('#prod_id').val('');
+                mostrarFotoExistente('');
             });
 
             // Ajuste de stock
