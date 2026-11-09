@@ -82,9 +82,8 @@ class Portal {
     }
 
     public function entrenador(): ?array {
-        $stmt=$this->db->query("SELECT id,nombre FROM usuarios
-            WHERE rol='entrenador' AND estado='activo' ORDER BY id ASC LIMIT 1");
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        require_once __DIR__.'/Entrenador.php';
+        return (new Entrenador())->principal();
     }
 
     public function rutinasPorSocio(int $idSocio): array {
