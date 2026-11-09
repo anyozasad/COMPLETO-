@@ -91,6 +91,9 @@ jobs:
           python3 tests/semana11_http.py
           PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-x64 node tests/semana11_browser.mjs
 
+      - name: Probar detección de datos incompletos y duplicados sin tocar BD real
+        run: php tests/semana11_integridad.php
+
       - name: Empaquetar código y evidencias de PRUEBA (no BD de la empresa)
         if: always()
         shell: bash
