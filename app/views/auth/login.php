@@ -63,9 +63,10 @@ $config = Configuracion::getInfo();
             <?php endif; ?>
 
             <form action="/auth/login" method="POST">
+                <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_admin'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                 <div class="mb-3">
                     <label class="form-label text-secondary">Correo Electrónico</label>
-                    <input type="email" name="email" class="form-control form-control-lg" placeholder="admin@irongym.com" required>
+                    <input type="email" name="email" class="form-control form-control-lg" placeholder="correo@empresa.com" required>
                 </div>
                 <div class="mb-4">
                     <label class="form-label text-secondary">Contraseña</label>
