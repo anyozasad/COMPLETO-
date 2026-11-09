@@ -76,21 +76,25 @@ class Socio {
 
     // Obtener socios cuya suscripción vence en los próximos N días
     public function obtenerVencimientosProximos($dias = 7) {
-        $query = "SELECT s.id, s.nombre, s.telefono, s.whatsapp_api_key,
-                         sus.fecha_fin, p.nombre as nombre_plan,
-                         DATEDIFF(sus.fecha_fin, CURDATE()) as dias_restantes
-                  FROM socios s
-                  INNER JOIN suscripciones sus ON sus.socio_id = s.id
-                  INNER JOIN planes p ON sus.plan_id = p.id
-                  WHERE sus.estado = 'activa'
-                    AND sus.fecha_fin >= CURDATE()
-                    AND sus.fecha_fin <= DATE_ADD(CURDATE(), INTERVAL :dias DAY)
-                    AND s.estado = 'activo'
-                  ORDER BY sus.fecha_fin ASC";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':dias', $dias, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $dias=max(0,min(30,(int)$dias));
+        $query="SELECT s.id,s.nombre,s.telefono,s.whatsapp_api_key,
+                   su.fecha_fin,p.nombre AS nombre_plan,
+                   DATEDIFF(su.fecha_fin,CURDATE()) AS dias_restantes
+                FROM socios s
+                JOIN suscripciones su ON su.socio_id=s.id
+                JOIN planes p ON p.id=su.plan_id
+                WHERE su.estado='activa'
+                  AND su.fecha_fin>=CURDATE()
+                  AND su.fecha_fin<=DATE_ADD(CURDATE(),INTERVAL $dias DAY)
+                  AND s.estado='activo'
+                  AND NOT EXISTS (
+                    SELECT 1 FROM suscripciones n
+                    WHERE n.socio_id=s.id AND n.estado='activa'
+                    AND (n.fecha_fin>su.fecha_fin OR
+                        (n.fecha_fin=su.fecha_fin AND n.id>su.id))
+                  )
+                ORDER BY su.fecha_fin ASC,s.nombre ASC";
+        return $this->conn->query($query)->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // Guardar la WhatsApp API Key de un socio
