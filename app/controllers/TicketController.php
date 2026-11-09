@@ -3,14 +3,12 @@ define('FPDF_FONTPATH', '../app/lib/fpdf/font/');
 require_once '../app/lib/fpdf/fpdf.php';
 require_once '../app/config/Database.php';
 require_once '../app/models/Configuracion.php';
+require_once '../app/lib/Auth.php';
 
 class TicketController {
 
     private function verificarAuth() {
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: ' . BASE_URL . '/auth/index');
-            exit;
-        }
+        Auth::requerirRol(['admin','recepcionista']);
     }
 
     private function t($str) {
