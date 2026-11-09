@@ -19,6 +19,16 @@ on:
       - 'app/controllers/PortalController.php'
       - 'app/views/portal/index.php'
       - 'tests/portal_smoke.php'
+      - 'app/models/RutinaRecomendada.php'
+      - 'app/controllers/RutinasController.php'
+      - 'app/views/rutinas/index.php'
+      - 'app/models/PagoSuscripcion.php'
+      - 'app/controllers/PagosController.php'
+      - 'app/views/pagos/index.php'
+      - 'app/views/pagos/comprobante.php'
+      - 'app/models/Asistencia.php'
+      - 'app/controllers/AsistenciaController.php'
+      - 'app/models/Dashboard.php'
       - '.github/workflows/semana05-php-lint.yml'
   workflow_dispatch:
 
@@ -54,6 +64,16 @@ jobs:
           php -l app/controllers/PortalController.php
           php -l app/views/portal/index.php
           php -l tests/portal_smoke.php
+          php -l app/models/RutinaRecomendada.php
+          php -l app/controllers/RutinasController.php
+          php -l app/views/rutinas/index.php
+          php -l app/models/PagoSuscripcion.php
+          php -l app/controllers/PagosController.php
+          php -l app/views/pagos/index.php
+          php -l app/views/pagos/comprobante.php
+          php -l app/models/Asistencia.php
+          php -l app/controllers/AsistenciaController.php
+          php -l app/models/Dashboard.php
           php -l tests/semana05_smoke.php
 
   integracion-mysql:
