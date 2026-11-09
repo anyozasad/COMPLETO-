@@ -80,6 +80,7 @@ try {
     throw new Error('Hay '+externos.length+' peticiones CDN externas. Revisar semana11_navegador.json');
   }
   if(imagenesRotas.length){
+    console.error('IMAGENES ROTAS:',JSON.stringify(imagenesRotas));
     throw new Error('Hay '+imagenesRotas.length+' imágenes rotas. Revisar semana11_navegador.json');
   }
   console.log('PRUEBAS NAVEGADOR OK: '+screens.length+' capturas.');
