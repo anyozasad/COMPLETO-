@@ -25,7 +25,9 @@ if (!(new Usuario())->crearAdmin()) {
 $db->prepare("INSERT INTO configuracion
     (id,nombre_sistema,ruc,direccion,telefono,email,logo,moneda)
     VALUES (1,'Mallqui Gym','00000000000','Dirección de pruebas',
-            '000000000','pruebas@example.test','logo_empresa.png','S/')")
+            '000000000','pruebas@example.test','logo_empresa.png','S/')
+    ON DUPLICATE KEY UPDATE logo=VALUES(logo),email=VALUES(email),
+        nombre_sistema=VALUES(nombre_sistema)")
    ->execute();
 $db->exec("INSERT INTO categorias (nombre,estado) VALUES
     ('Suplementos','activo'),('Ropa','activo')");
