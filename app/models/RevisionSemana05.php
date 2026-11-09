@@ -102,6 +102,34 @@ class RevisionSemana05 {
         return $pendientes;
     }
 
+    public function posiblesDuplicados(): array {
+        // Solo se reportan agrupaciones sospechosas. No se eliminan registros.
+        $consultas=[
+            'Socios con correo repetido' => "SELECT COUNT(*) FROM (
+                SELECT LOWER(TRIM(email)) AS correo
+                FROM socios WHERE email IS NOT NULL AND TRIM(email)<>''
+                GROUP BY LOWER(TRIM(email)) HAVING COUNT(*)>1
+            ) d",
+            'Reservas activas en mismo horario' => "SELECT COUNT(*) FROM (
+                SELECT fecha,hora FROM reservas WHERE estado <> 'cancelada'
+                GROUP BY fecha,hora HAVING COUNT(*)>1
+            ) d",
+            'Productos con código repetido' => "SELECT COUNT(*) FROM (
+                SELECT codigo FROM productos WHERE codigo IS NOT NULL AND TRIM(codigo)<>''
+                GROUP BY codigo HAVING COUNT(*)>1
+            ) d",
+            'Suscripciones repetidas de mismo plan y fecha' => "SELECT COUNT(*) FROM (
+                SELECT socio_id,plan_id,fecha_inicio FROM suscripciones
+                GROUP BY socio_id,plan_id,fecha_inicio HAVING COUNT(*)>1
+            ) d"
+        ];
+        $salida=[];
+        foreach($consultas as $nombre=>$sql){
+            $salida[]=['tipo'=>$nombre,'grupos'=>(int)$this->conn->query($sql)->fetchColumn()];
+        }
+        return $salida;
+    }
+
     public function reservasPorEstado(): array {
         // La tabla la inicializa el módulo Reserva.
         $stmt = $this->conn->query("SELECT estado, COUNT(*) AS total FROM reservas GROUP BY estado");
