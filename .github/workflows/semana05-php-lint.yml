@@ -2,39 +2,11 @@ name: Verificar PHP - Proyecto EFSRT
 on:
   push:
     paths:
-      - 'app/controllers/InventarioController.php'
-      - 'app/controllers/ReservasController.php'
-      - 'app/models/Reserva.php'
-      - 'app/models/Producto.php'
-      - 'app/views/inventario/productos.php'
-      - 'app/views/pos/index.php'
-      - 'app/views/reservas/index.php'
-      - 'app/views/inc/navbar.php'
-      - 'app/models/RevisionSemana05.php'
-      - 'app/controllers/RevisionController.php'
-      - 'app/views/revision/index.php'
-      - 'app/models/Venta.php'
-      - 'tests/semana05_smoke.php'
-      - 'app/models/Portal.php'
-      - 'app/controllers/PortalController.php'
-      - 'app/views/portal/index.php'
-      - 'tests/portal_smoke.php'
-      - 'app/models/RutinaRecomendada.php'
-      - 'app/controllers/RutinasController.php'
-      - 'app/views/rutinas/index.php'
-      - 'app/models/PagoSuscripcion.php'
-      - 'app/controllers/PagosController.php'
-      - 'app/views/pagos/index.php'
-      - 'app/views/pagos/comprobante.php'
-      - 'app/models/Asistencia.php'
-      - 'app/controllers/AsistenciaController.php'
-      - 'app/models/Dashboard.php'
-      - 'app/models/TokenApi.php'
-      - 'app/controllers/ApiController.php'
-      - 'app/controllers/AuthController.php'
-      - 'app/views/auth/login.php'
-      - 'app/models/Socio.php'
-      - 'app/views/home/index.php'
+      - 'app/**'
+      - 'tests/**'
+      - 'public/**'
+      - 'docs/**'
+      - 'scripts/**'
       - '.github/workflows/semana05-php-lint.yml'
   workflow_dispatch:
 
@@ -50,43 +22,11 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-      - name: Revisar sintaxis PHP
+      - name: Revisar sintaxis de todo el código PHP
         shell: bash
         run: |
           set -e
-          php -l app/controllers/InventarioController.php
-          php -l app/controllers/ReservasController.php
-          php -l app/models/Reserva.php
-          php -l app/models/Producto.php
-          php -l app/views/inventario/productos.php
-          php -l app/views/pos/index.php
-          php -l app/views/reservas/index.php
-          php -l app/views/inc/navbar.php
-          php -l app/models/RevisionSemana05.php
-          php -l app/controllers/RevisionController.php
-          php -l app/views/revision/index.php
-          php -l app/models/Venta.php
-          php -l app/models/Portal.php
-          php -l app/controllers/PortalController.php
-          php -l app/views/portal/index.php
-          php -l tests/portal_smoke.php
-          php -l app/models/RutinaRecomendada.php
-          php -l app/controllers/RutinasController.php
-          php -l app/views/rutinas/index.php
-          php -l app/models/PagoSuscripcion.php
-          php -l app/controllers/PagosController.php
-          php -l app/views/pagos/index.php
-          php -l app/views/pagos/comprobante.php
-          php -l app/models/Asistencia.php
-          php -l app/controllers/AsistenciaController.php
-          php -l app/models/Dashboard.php
-          php -l app/models/TokenApi.php
-          php -l app/controllers/ApiController.php
-          php -l app/controllers/AuthController.php
-          php -l app/views/auth/login.php
-          php -l app/models/Socio.php
-          php -l app/views/home/index.php
-          php -l tests/semana05_smoke.php
+          find app/controllers app/models app/views public tests             -type f -name '*.php' -print0 | xargs -0 -n1 php -l
 
   integracion-mysql:
     runs-on: ubuntu-latest
@@ -146,3 +86,40 @@ jobs:
           DB_TEST_USER: root
           DB_TEST_PASS: testroot
           DB_TEST_NAME: gym_system
+
+  estructura-recursos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verificar estructura del sistema y bibliotecas offline
+        shell: bash
+        run: |
+          set -e
+          for path in \
+            app/controllers/PortalController.php \
+            app/controllers/ApiController.php \
+            app/controllers/ReservasController.php \
+            app/controllers/PagosController.php \
+            app/controllers/RutinasController.php \
+            app/controllers/EntrenadorController.php \
+            app/controllers/AsistenciaController.php \
+            app/models/Reserva.php \
+            app/models/PagoSuscripcion.php \
+            app/models/TokenApi.php \
+            app/views/portal/index.php \
+            app/views/home/index.php \
+            app/views/rutinas/index.php \
+            app/views/entrenador/index.php \
+            app/views/pagos/index.php \
+            public/vendor/bootstrap/bootstrap.min.css \
+            public/vendor/bootstrap/bootstrap.bundle.min.js \
+            public/vendor/jquery/jquery.min.js \
+            public/vendor/chartjs/chart.js \
+            public/vendor/fontawesome/webfonts/fa-solid-900.woff2 \
+            public/img/logo_empresa.png \
+            docs/VERIFICACION_EFSRT_SEMANAS_01_A_11.md \
+            scripts/respaldo_efsrt.ps1
+          do
+            test -s "$path" || { echo "FALTA: $path"; exit 1; }
+          done
+          echo "Estructura esencial: correcta"
