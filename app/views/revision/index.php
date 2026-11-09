@@ -10,7 +10,7 @@ $colores = ['pendiente'=>'bg-warning text-dark','confirmada'=>'bg-primary','comp
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Verificación de semana 5 - <?= $esc($config['nombre_sistema'] ?? 'Gimnasio') ?></title>
+<title>Verificación del proyecto EFSRT - <?= $esc($config['nombre_sistema'] ?? 'Gimnasio') ?></title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link rel="stylesheet" href="<?= $esc(BASE_URL) ?>/css/gym-theme.css">
@@ -21,7 +21,7 @@ $colores = ['pendiente'=>'bg-warning text-dark','confirmada'=>'bg-primary','comp
 <div class="module-container">
 <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
 <div>
-<h3 class="fw-bold text-dark mb-1"><i class="fas fa-clipboard-check text-primary me-2"></i> Verificación de la semana 5</h3>
+<h3 class="fw-bold text-dark mb-1"><i class="fas fa-clipboard-check text-primary me-2"></i> Verificación del proyecto EFSRT</h3>
 <p class="text-muted small mb-0">Reservas, productos, imágenes, pagos y socios · Datos reales de MySQL</p>
 </div>
 <div class="d-flex gap-2">
@@ -116,6 +116,16 @@ Las ventas a «Cliente general» están permitidas.
 <?php if (!$socios): ?><tr><td colspan="5" class="text-center text-muted py-4">No hay socios registrados.</td></tr><?php endif; ?>
 </tbody></table></div>
 <p class="text-muted small mb-0">Se muestran hasta 100 ventas y cajas, y hasta 150 socios. Esta revisión no corrige datos automáticamente; sirve para localizar incidencias y registrar evidencias reales.</p>
+<h5 class="fw-bold text-dark mb-3 mt-4">6. Registros que requieren revisión (semana 9 y 11)</h5>
+<p class="text-muted small">Los posibles registros repetidos se indican para revisión manual. No se borran automáticamente.</p>
+<div class="table-responsive"><table class="table table-hover align-middle">
+<thead><tr><th>Validación</th><th>Grupos sospechosos</th><th>Estado</th></tr></thead><tbody>
+<?php foreach ($duplicados as $d): ?>
+<tr><td><?= $esc($d['tipo']) ?></td><td><?= (int)$d['grupos'] ?></td>
+<td><span class="badge <?= (int)$d['grupos'] ? 'bg-warning text-dark' : 'bg-success' ?>">
+<?= (int)$d['grupos'] ? 'Revisar' : 'Sin duplicados detectados' ?></span></td></tr>
+<?php endforeach; ?>
+</tbody></table></div>
 </div></div>
 <?php require_once __DIR__ . '/../inc/footer.php'; ?>
 </body></html>
