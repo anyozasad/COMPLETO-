@@ -3,14 +3,13 @@ define('FPDF_FONTPATH', '../app/lib/fpdf/font/');
 require_once '../app/lib/fpdf/fpdf.php';
 require_once '../app/config/Database.php';
 require_once '../app/models/Configuracion.php';
+require_once '../app/models/PagoSuscripcion.php';
+require_once '../app/lib/Auth.php';
 
 class ComprobanteController {
     
     private function verificarAuth() {
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: ' . BASE_URL . '/auth/index');
-            exit;
-        }
+        Auth::requerirRol(['admin','recepcionista']);
     }
 
     private function texto($str) {
@@ -36,6 +35,8 @@ class ComprobanteController {
 
         $configModel = new Configuracion();
         $empresa = $configModel->obtenerDatos();
+        $pagado = (new PagoSuscripcion())->totalPagado((int)$datos['id']);
+        $saldo = max(0, round((float)$datos['precio'] - $pagado, 2));
         
         // --- VARIABLE MONEDA ---
         $simbolo = $empresa['moneda']; 
@@ -66,7 +67,7 @@ class ComprobanteController {
         $pdf->SetFont('Arial','B',10);
         $pdf->SetTextColor(99, 102, 241);
         if($hay_logo) { $pdf->Cell(28); }
-        $pdf->Cell(0, 5, 'COMPROBANTE DE PAGO', 0, 1, 'L');
+        $pdf->Cell(0, 5, 'ESTADO DE SUSCRIPCION', 0, 1, 'L');
         
         $pdf->SetFont('Arial','',9);
         $pdf->SetTextColor(100, 100, 100);
@@ -142,9 +143,14 @@ class ComprobanteController {
         // Totales
         $pdf->Ln(2);
         $pdf->SetFont('Arial','B',11);
-        $pdf->Cell(150, 10, 'TOTAL PAGADO: ', 0, 0, 'R');
+        $pdf->Cell(150, 10, 'PAGOS RECIBIDOS: ', 0, 0, 'R');
         $pdf->SetTextColor(99, 102, 241); // Indigo color for emphasis
-        $pdf->Cell(40, 10, $simbolo . ' ' . number_format($datos['precio'], 2) . ' ', 0, 1, 'R');
+        $pdf->Cell(40, 10, $simbolo . ' ' . number_format($pagado, 2) . ' ', 0, 1, 'R');
+        $pdf->SetTextColor(0,0,0);
+        $pdf->Cell(150,7,'SALDO PENDIENTE:',0,0,'R');
+        $pdf->Cell(40,7,$simbolo . ' ' . number_format($saldo,2),0,1,'R');
+        $pdf->SetFont('Arial','I',8);
+        $pdf->MultiCell(0,5,$this->texto('Constancia interna. No es boleta electronica SUNAT.'));
         $pdf->SetTextColor(0, 0, 0); // Reset text color
 
         $pdf->Ln(30);
