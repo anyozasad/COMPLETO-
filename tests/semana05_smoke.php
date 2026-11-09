@@ -27,6 +27,7 @@ $db->exec("CREATE TABLE usuarios (
 ) ENGINE=InnoDB");
 $db->exec("CREATE TABLE socios (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, nombre VARCHAR(150) NOT NULL,
+    dni VARCHAR(20) NULL, email VARCHAR(100) NULL, telefono VARCHAR(20) NULL,
     estado ENUM('activo','inactivo','pendiente') NOT NULL DEFAULT 'activo'
 ) ENGINE=InnoDB");
 $db->exec("CREATE TABLE categorias (
