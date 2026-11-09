@@ -183,4 +183,46 @@ verificar(abs((float)$revision->comparacionCajas()[0]['diferencia']-10)<0.01,
 $db->exec("UPDATE ventas SET total = 80 WHERE id = " . (int)$ventaId);
 
 
-echo "\nPRUEBAS DE SEMANA 5 COMPLETADAS CORRECTAMENTE\n";
+
+// Semanas 5, 9 y 10: cobros reales de suscripción y conciliación completa.
+require_once __DIR__ . '/../app/models/PagoSuscripcion.php';
+$pagos = new PagoSuscripcion();
+$saldos = $pagos->suscripcionesConSaldo();
+verificar(count($saldos)===1 && abs((float)$saldos[0]['saldo']-60)<0.01,
+    'suscripción pendiente no se trata como pagada');
+$idPago1=$pagos->registrar(1,1,20,'efectivo','PRUEBA-1');
+verificar($idPago1>0,'primer abono de suscripción registrado');
+$idPago2=$pagos->registrar(1,1,40,'transferencia','PRUEBA-2');
+verificar($idPago2>$idPago1,'segundo abono de suscripción registrado');
+$saldos=$pagos->suscripcionesConSaldo();
+verificar(abs((float)$saldos[0]['pagado']-60)<0.01 &&
+    abs((float)$saldos[0]['saldo'])<0.01,
+    'abonos suman exactamente el precio y saldo queda en cero');
+$rechazo=false;
+try { $pagos->registrar(1,1,5,'efectivo'); } catch(DomainException $e) {$rechazo=true;}
+verificar($rechazo, 'impedir pago duplicado por encima del saldo');
+verificar(abs((float)$db->query("SELECT total_ventas FROM cajas WHERE id=1")->fetchColumn()-140)<0.01,
+    'cuadrar caja: venta de productos más pagos de planes');
+verificar(abs((float)$revision->comparacionCajas()[0]['diferencia'])<0.01,
+    'revisión de caja incluye correctamente abonos de suscripciones');
+verificar(count($pagos->historial())===2 &&
+    $pagos->obtener($idPago1)['socio_nombre']==='Socio de prueba',
+    'historial de pagos queda asociado al socio y al cajero');
+
+// Semana 6: no dejar registrar accesos duplicados ni sin membresía.
+$db->exec("CREATE TABLE asistencias (
+    id INT AUTO_INCREMENT PRIMARY KEY, socio_id INT NOT NULL,
+    fecha_hora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB");
+$db->exec("UPDATE suscripciones SET fecha_inicio=DATE_SUB(CURRENT_DATE(),INTERVAL 1 DAY),
+    fecha_fin=DATE_ADD(CURRENT_DATE(),INTERVAL 10 DAY) WHERE id=1");
+require_once __DIR__.'/../app/models/Asistencia.php';
+$asistencia = new Asistencia();
+verificar($asistencia->registrar(1),'asistencia con plan vigente');
+verificar(!$asistencia->registrar(1),'rechaza repetir asistencia el mismo día');
+$db->exec("UPDATE suscripciones SET fecha_fin=DATE_SUB(CURRENT_DATE(),INTERVAL 1 DAY) WHERE id=1");
+$db->exec("DELETE FROM asistencias");
+verificar(!$asistencia->registrar(1),'rechaza acceso con plan vencido');
+
+
+echo "\nPRUEBAS DE SEMANA 5 A 11 COMPLETADAS CORRECTAMENTE\n";
