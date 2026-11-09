@@ -5,6 +5,7 @@ on:
       - 'app/controllers/InventarioController.php'
       - 'app/controllers/ReservasController.php'
       - 'app/models/Reserva.php'
+      - 'app/models/Producto.php'
       - 'app/views/inventario/productos.php'
       - 'app/views/pos/index.php'
       - 'app/views/reservas/index.php'
@@ -31,6 +32,7 @@ jobs:
           php -l app/controllers/InventarioController.php
           php -l app/controllers/ReservasController.php
           php -l app/models/Reserva.php
+          php -l app/models/Producto.php
           php -l app/views/inventario/productos.php
           php -l app/views/pos/index.php
           php -l app/views/reservas/index.php
