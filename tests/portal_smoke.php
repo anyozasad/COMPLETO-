@@ -83,4 +83,32 @@ $db->exec("INSERT INTO rutinas (socio_id,dia1,dia2,observaciones)
 revisar($portal->rutinasPorSocio((int)$cuenta['socio_id'])['dia1']==='Calentamiento y entrenamiento guiado',
     'rutina del usuario sincronizada con seguimiento');
 
+
+// Semana 1 y 6: API y asignación automática de rutinas por fecha/nivel/tipo.
+require_once __DIR__.'/../app/models/RutinaRecomendada.php';
+require_once __DIR__.'/../app/models/TokenApi.php';
+
+$rutinasPlan=new RutinaRecomendada();
+revisar($rutinasPlan->asignar((int)$cuenta['socio_id'],'principiante','funcional','2026-12-30'),
+    'programa por nivel y tipo guardado en MySQL');
+$programa=$rutinasPlan->obtener((int)$cuenta['socio_id']);
+revisar($programa['nivel']==='principiante' &&
+    $programa['tipo']==='funcional' && $programa['fecha_revision']==='2026-12-30',
+    'fecha de revisión almacenada y sincronizada');
+revisar(count($rutinasPlan->listado())===1,'dashboard lista programas asignados');
+revisar(str_contains(RutinaRecomendada::propuesta('principiante','funcional',1),'Movilidad'),
+    'recomendación diaria cambia según tipo y día');
+revisar(RutinaRecomendada::propuesta('principiante','funcional',7)==='Descanso y recuperación.',
+    'domingo contempla descanso');
+
+$tokens=new TokenApi();
+$nuevoToken=$tokens->crear((int)$cuenta['id']);
+revisar(strlen($nuevoToken['access_token'])===64,'token de API aleatorio');
+revisar($tokens->autenticar($nuevoToken['access_token'])['socio_id']==$cuenta['socio_id'],
+    'API autentica usuario y socio correcto');
+revisar($tokens->autenticar('falso')===null,'API rechaza token inválido');
+$tokens->revocar($nuevoToken['access_token']);
+revisar($tokens->autenticar($nuevoToken['access_token'])===null,'cerrar sesión revoca token');
+
+
 echo "\nPORTAL USUARIO Y DASHBOARD SINCRONIZADOS EN MYSQL DE PRUEBA\n";
