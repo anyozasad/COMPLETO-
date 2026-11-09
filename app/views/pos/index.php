@@ -290,8 +290,8 @@ $config = Configuracion::getInfo();
                     <div class="col-6 col-md-4 col-xl-3 product-item" data-cat="<?= $p['categoria_id'] ?>" data-nombre="<?= strtolower($p['nombre']) ?>">
                         <div class="card product-card h-100 <?= ($p['stock'] <= 0) ? 'out-of-stock' : '' ?>"
                              onclick="<?= ($p['stock'] > 0) ? 'agregarAlCarrito(' . $p['id'] . ')' : '' ?>">
-                            <?php if(!empty($p['foto'])): ?>
-                                <img src="/img/productos/<?= $p['foto'] ?>" class="card-img-top" alt="<?= $p['nombre'] ?>">
+                            <?php if (!empty($p['foto']) && is_file(__DIR__ . '/../../../public/img/productos/' . basename($p['foto']))): ?>
+                                <img src="<?= htmlspecialchars(BASE_URL . '/img/productos/' . rawurlencode(basename($p['foto'])), ENT_QUOTES, 'UTF-8') ?>" class="card-img-top" alt="<?= htmlspecialchars($p['nombre'], ENT_QUOTES, 'UTF-8') ?>">
                             <?php else: ?>
                                 <div class="product-placeholder-img">
                                     <i class="fas fa-box fa-2x text-muted opacity-50"></i>
