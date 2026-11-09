@@ -14,6 +14,20 @@ Actualización del código: 09/11/2026. Se toma como referencia la bitácora EFS
 
 El respaldo \`bk_basededatos.sql\` trae los diez productos de prueba con \`foto = NULL\`, aunque la carpeta \`public/img/productos/\` contiene archivos. La aplicación no puede adivinar qué fotografía corresponde a cada producto; el administrador debe seleccionarla una vez desde Inventario > Editar producto > "O seleccionar una imagen ya guardada". A partir de entonces queda vinculada en la BD y aparece también en Punto de Venta.
 
+## Pantalla agregada: Verificación Semana 5
+
+En el menú del administrador, abre **Verificación Semana 5** (`/revision/index`). Muestra:
+
+- Estado de reservas y enlace para gestionarlas (pendiente/confirmada/completada/cancelada).
+- Productos sin imagen vinculada o cuyo archivo local desapareció.
+- Ventas con nombres del socio o cliente general, medio de pago y comparación contra detalle y descuento.
+- Diferencias entre `cajas.total_ventas` y la suma de `ventas.total`.
+- Socios con cantidad de suscripciones y compras, calculadas por separado para evitar duplicados.
+
+La lectura es de solo consulta y **no ajusta importes ni cambia datos automáticamente**. La conciliación no equivale a prueba de pagos de suscripciones: no hay tabla de cobros de suscripciones en el esquema actual.
+
+Se reforzó además `app/models/Venta.php` para que una venta solo se confirme con caja abierta, producto activo y stock suficiente. El total es verificado contra el precio actual; los detalles, stock y total de caja se guardan juntos en una transacción. Si algo falla, se revierte.
+
 ## Verificación en XAMPP / Laragon
 
 1. En la copia de este repositorio, ejecutar \`git pull origin main\` y tener Apache y MySQL iniciados.
