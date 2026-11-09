@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/Portal.php';
 require_once __DIR__ . '/../models/Reserva.php';
+require_once __DIR__ . '/../models/RutinaRecomendada.php';
 
 class PortalController {
     private Portal $portal;
@@ -44,9 +45,11 @@ class PortalController {
         $cliente=$this->portal->socio((int)($_SESSION['portal_socio_id'] ?? 0));
         $misReservas=[];
         $rutina=[];
+        $programa=null;
         if ($cliente) {
             $misReservas=$this->reservas->obtenerPorCliente((int)$_SESSION['portal_cliente_id']);
             $rutina=$this->portal->rutinasPorSocio((int)$cliente['id']);
+            $programa=(new RutinaRecomendada())->obtener((int)$cliente['id']);
         }
         require_once __DIR__ . '/../views/portal/index.php';
     }
