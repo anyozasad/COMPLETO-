@@ -10,6 +10,10 @@ on:
       - 'app/views/pos/index.php'
       - 'app/views/reservas/index.php'
       - 'app/views/inc/navbar.php'
+      - 'app/models/RevisionSemana05.php'
+      - 'app/controllers/RevisionController.php'
+      - 'app/views/revision/index.php'
+      - 'app/models/Venta.php'
       - 'tests/semana05_smoke.php'
       - '.github/workflows/semana05-php-lint.yml'
   workflow_dispatch:
@@ -38,6 +42,10 @@ jobs:
           php -l app/views/pos/index.php
           php -l app/views/reservas/index.php
           php -l app/views/inc/navbar.php
+          php -l app/models/RevisionSemana05.php
+          php -l app/controllers/RevisionController.php
+          php -l app/views/revision/index.php
+          php -l app/models/Venta.php
           php -l tests/semana05_smoke.php
 
   integracion-mysql:
