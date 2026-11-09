@@ -9,8 +9,8 @@ $config = Configuracion::getInfo();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reporte de Asistencias - <?= htmlspecialchars($config['nombre_sistema'] ?? 'Gym System') ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/css/gym-theme.css?v=<?= time() ?>">
     <style>
         .kpi-card { border-radius: 18px; padding: 1.4rem 1.8rem; color: white; position: relative; overflow: hidden; }
@@ -161,7 +161,7 @@ $config = Configuracion::getInfo();
     </div>
 
     <?php require_once '../app/views/inc/footer.php'; ?>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <script>
         document.getElementById('searchReg').addEventListener('input', function() {
             const term = this.value.toLowerCase();

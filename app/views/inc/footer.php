@@ -7,15 +7,15 @@
 </div> <!-- /#wrapper -->
 
 <!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="/vendor/jquery/jquery.min.js"></script>
+<script src="/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="/vendor/datatables/dataTables.bootstrap5.min.js"></script>
+<script src="/vendor/sweetalert2/sweetalert2.min.js"></script>
 <!-- Export Libraries -->
-<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="/vendor/sheetjs/xlsx.full.min.js"></script>
+<script src="/vendor/jspdf/jspdf.umd.min.js"></script>
+<script src="/vendor/jspdf/jspdf.plugin.autotable.min.js"></script>
 
 <script>
     $(document).ready(function() {
@@ -144,7 +144,7 @@
                 var printWin = window.open('', '_blank', 'width=900,height=600');
                 printWin.document.write('\
                     <html><head><title>' + (title || 'Reporte') + '</title>\
-                    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">\
+                    <link rel="stylesheet" href="/vendor/bootstrap/bootstrap.min.css">\
                     <style>\
                         body { font-family: Arial, sans-serif; padding: 20px; }\
                         h4 { color: #6366F1; margin-bottom: 4px; }\

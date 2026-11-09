@@ -10,8 +10,8 @@ $moneda = $config['moneda'] ?? '$';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial de Ventas - <?= htmlspecialchars($config['nombre_sistema'] ?? 'Gym System') ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/css/gym-theme.css?v=<?= time() ?>">
     <style>
         .method-badge { font-size: 0.72rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
@@ -199,7 +199,7 @@ $moneda = $config['moneda'] ?? '$';
     </div>
 
     <?php require_once '../app/views/inc/footer.php'; ?>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <script>
         function verDetalle(id, total, cliente) {
             document.getElementById('modalVentaId').textContent = 'Venta #' + id;

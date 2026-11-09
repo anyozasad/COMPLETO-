@@ -15,7 +15,7 @@ $config = Configuracion::getInfo();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - <?= $config['nombre_sistema'] ?></title>
     
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             background: linear-gradient(120deg, #2980b9, #8e44ad);
