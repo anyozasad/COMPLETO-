@@ -12,9 +12,20 @@ if(process.env.CI!=='true' || process.env.DB_NAME!=='gym_system_ci' || !login ||
 }
 const errors=[];
 const screens=[];
+const externos=[];
+const imagenesRotas=[];
 const browser=await chromium.launch({headless:true});
 try {
   const adminContext=await browser.newContext({viewport:{width:1440,height:900},deviceScaleFactor:1});
+  await adminContext.route('**/*',route=>{
+    const url=route.request().url();
+    // Bloquear el acceso de la app a todo CDN externo, sin bloquear Apache local.
+    if(/^https?:/i.test(url) && !url.startsWith(base+'/')){
+      externos.push(url);
+      return route.abort();
+    }
+    return route.continue();
+  });
   const page=await adminContext.newPage();
   page.on('pageerror',err=>errors.push({pagina:page.url(),error:err.message}));
 
@@ -26,6 +37,9 @@ try {
     if(term && !(await page.locator('body').innerText()).includes(term)){
       throw new Error('Pantalla sin texto esperado: '+slug+' / '+term);
     }
+    const rotas=await page.locator('img').evaluateAll(imgs=>
+      imgs.filter(x=>x.complete && x.naturalWidth===0).map(x=>x.currentSrc||x.src));
+    for(const imagen of rotas) imagenesRotas.push({pantalla:slug,imagen});
     await page.screenshot({path:reportDir+'/semana11_'+slug+'.png',fullPage:true,animations:'disabled'});
     screens.push({pantalla:slug,ruta:url,resultado:'visible',codigo:resp.status()});
     console.log('CAPTURA '+slug+' OK');
@@ -56,10 +70,17 @@ try {
       entorno:'GitHub Actions, MySQL temporal, Chromium',
       advertencia:'Capturas técnicas de datos de prueba. No representan instalación del alumno.',
       fecha:new Date().toISOString(),pantallas:screens,
-      errores_js:errors
+      errores_js:errors,peticiones_externas_bloqueadas:externos,
+      imagenes_rotas:imagenesRotas
     },null,2),'utf8');
   if(errors.length){
     throw new Error('Chromium reportó '+errors.length+' errores JavaScript. Revisar semana11_navegador.json');
+  }
+  if(externos.length){
+    throw new Error('Hay '+externos.length+' peticiones CDN externas. Revisar semana11_navegador.json');
+  }
+  if(imagenesRotas.length){
+    throw new Error('Hay '+imagenesRotas.length+' imágenes rotas. Revisar semana11_navegador.json');
   }
   console.log('PRUEBAS NAVEGADOR OK: '+screens.length+' capturas.');
 } finally {
