@@ -13,6 +13,8 @@ class RevisionSemana05 {
     public function __construct() {
         $this->conn = (new Database())->getConnection();
         if (!$this->conn) throw new RuntimeException('Conexión MySQL no disponible.');
+        require_once __DIR__ . '/PagoSuscripcion.php';
+        new PagoSuscripcion();
     }
 
     public function resumen(): array {
@@ -48,14 +50,19 @@ class RevisionSemana05 {
 
     public function comparacionCajas(): array {
         $sql = "SELECT c.id, c.estado, c.total_ventas AS total_registrado,
-                       COALESCE(v.total_calculado,0) AS total_ventas_bd,
-                       ROUND(c.total_ventas - COALESCE(v.total_calculado,0), 2) AS diferencia,
-                       COALESCE(v.cantidad,0) AS cantidad_ventas
+                       (COALESCE(v.total_calculado,0)+COALESCE(ps.total_pagos,0)) AS total_ventas_bd,
+                       ROUND(c.total_ventas - COALESCE(v.total_calculado,0)-COALESCE(ps.total_pagos,0),2) AS diferencia,
+                       COALESCE(v.cantidad,0) AS cantidad_ventas,
+                       COALESCE(ps.total_pagos,0) AS total_planes
                 FROM cajas c
                 LEFT JOIN (
                   SELECT caja_id, COUNT(*) cantidad, SUM(total) total_calculado
                   FROM ventas GROUP BY caja_id
                 ) v ON v.caja_id=c.id
+                LEFT JOIN (
+                  SELECT caja_id,SUM(monto) AS total_pagos
+                  FROM pagos_suscripciones GROUP BY caja_id
+                ) ps ON ps.caja_id=c.id
                 ORDER BY c.id DESC LIMIT 100";
         return $this->conn->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
