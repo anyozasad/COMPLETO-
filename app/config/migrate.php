@@ -1,28 +1,53 @@
 <?php
-$db = new PDO('mysql:host=localhost;dbname=gym_system', 'root', '');
-$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+declare(strict_types=1);
 
-$columns = [
-    'ruc' => 'VARCHAR(20) NULL',
-    'direccion' => 'VARCHAR(255) NULL',
-    'telefono' => 'VARCHAR(20) NULL',
-    'email' => 'VARCHAR(100) NULL',
-    'logo' => 'VARCHAR(255) NULL',
-    'moneda' => "VARCHAR(10) NULL DEFAULT 'S/'"
-];
-
-foreach ($columns as $name => $type) {
-    try {
-        $db->exec("ALTER TABLE configuracion ADD COLUMN $name $type");
-        echo "Column $name added.\n";
-    } catch(PDOException $e) {
-        echo "Column $name exists or error: " . $e->getMessage() . "\n";
-    }
+/**
+ * Migración idempotente de un esquema existente del gimnasio.
+ *
+ * Ejecutar una vez con respaldo previo:
+ *   php app/config/migrate.php
+ *
+ * No elimina registros ni crea usuarios con claves por defecto.
+ */
+if(PHP_SAPI!=='cli') {
+    http_response_code(403);
+    exit("La migración solo se ejecuta en consola.\n");
 }
+require_once __DIR__.'/Database.php';
 
 try {
-    $db->exec("INSERT INTO configuracion (id, nombre_sistema, moneda) VALUES (1, 'Iron Gym', 'S/') ON DUPLICATE KEY UPDATE id=1");
-    echo "Base row initialized.\n";
-} catch(PDOException $e) {}
+    $db=(new Database())->getConnection();
+    $nombreBD=(string)$db->query('SELECT DATABASE()')->fetchColumn();
+    if($nombreBD==='') throw new RuntimeException('Base de datos no seleccionada.');
 
-echo "Done.\n";
+    $stmt=$db->query("SHOW COLUMNS FROM ventas LIKE 'descuento'");
+    if (!$stmt->fetch()) {
+        $db->exec("ALTER TABLE ventas ADD COLUMN descuento
+            DECIMAL(10,2) NOT NULL DEFAULT 0.00 AFTER total");
+        echo "Aplicado: ventas.descuento.\n";
+    } else {
+        echo "Existente: ventas.descuento.\n";
+    }
+
+    // No sobreescribir datos de una empresa instalada.
+    $db->exec("INSERT IGNORE INTO configuracion
+        (id,nombre_sistema,moneda) VALUES
+        (1,'Mallqui Gym','S/')");
+
+    foreach ([
+        'Portal.php'=>'Portal',
+        'Reserva.php'=>'Reserva',
+        'PagoSuscripcion.php'=>'PagoSuscripcion',
+        'RutinaRecomendada.php'=>'RutinaRecomendada',
+        'Entrenador.php'=>'Entrenador',
+        'TokenApi.php'=>'TokenApi'
+    ] as $file=>$className) {
+        require_once __DIR__.'/../models/'.$file;
+        new $className();
+        echo "OK: {$className}.\n";
+    }
+    echo "Migración completada (BD: {$nombreBD}).\n";
+} catch(Throwable $e) {
+    fwrite(STDERR,"No se pudo completar la migración: {$e->getMessage()}\n");
+    exit(1);
+}
