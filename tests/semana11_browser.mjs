@@ -38,7 +38,8 @@ try {
       throw new Error('Pantalla sin texto esperado: '+slug+' / '+term);
     }
     const rotas=await page.locator('img').evaluateAll(imgs=>
-      imgs.filter(x=>x.complete && x.naturalWidth===0).map(x=>x.currentSrc||x.src));
+      imgs.filter(x=>x.getClientRects().length>0 && x.complete &&
+        x.naturalWidth===0).map(x=>x.currentSrc||x.src));
     for(const imagen of rotas) imagenesRotas.push({pantalla:slug,imagen});
     await page.screenshot({path:reportDir+'/semana11_'+slug+'.png',fullPage:true,animations:'disabled'});
     screens.push({pantalla:slug,ruta:url,resultado:'visible',codigo:resp.status()});
