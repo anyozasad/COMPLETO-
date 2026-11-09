@@ -122,6 +122,9 @@ $is_active = function($path) use ($current_uri) {
                     <a class="list-group-item list-group-item-action rounded mb-1 <?= $is_active('/caja') ?>" href="/caja/index">
                         <i class="fas fa-cash-register w-20px text-center"></i> Caja
                     </a>
+                    <a class="list-group-item list-group-item-action rounded mb-1 <?= $is_active('/pagos') ?>" href="/pagos/index">
+                        <i class="fas fa-money-bill-wave w-20px text-center"></i> Pagos de Planes
+                    </a>
                     <a class="list-group-item list-group-item-action rounded mb-1 <?= $is_active('/suscripciones') ?>" href="/suscripciones/index">
                         <i class="fas fa-file-invoice-dollar w-20px text-center"></i> Suscripciones
                     </a>
