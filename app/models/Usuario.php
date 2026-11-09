@@ -34,15 +34,25 @@ class Usuario {
         return false; // No existe o clave errónea
     }
     
-    // Crear Admin por defecto si no hay nadie
-    public function crearAdmin() {
-        $check = $this->conn->query("SELECT count(*) FROM usuarios")->fetchColumn();
-        if($check == 0) {
-            $passHash = password_hash("123456", PASSWORD_DEFAULT);
-            $sql = "INSERT INTO usuarios (nombre, email, password, rol, estado) 
-                    VALUES ('Admin', 'admin@irongym.com', '$passHash', 'admin', 'activo')";
-            $this->conn->exec($sql);
+    // Inicialización opt-in: jamás crear admin con contraseña universal.
+    public function crearAdmin(): bool {
+        $cantidad=(int)$this->conn->query("SELECT COUNT(*) FROM usuarios")->fetchColumn();
+        if ($cantidad>0) return false;
+
+        $email=trim((string)(getenv('GYM_INITIAL_ADMIN_EMAIL') ?: ''));
+        $password=(string)(getenv('GYM_INITIAL_ADMIN_PASSWORD') ?: '');
+        if (!filter_var($email,FILTER_VALIDATE_EMAIL) || strlen($password)<12) {
+            // Instalar usuarios con scripts/crear_admin.php o configurar variables.
+            return false;
         }
+
+        $stmt=$this->conn->prepare("INSERT INTO usuarios
+            (nombre,email,password,rol,estado)
+            VALUES ('Administrador',:email,:password,'admin','activo')");
+        return $stmt->execute([
+            'email'=>$email,
+            'password'=>password_hash($password,PASSWORD_DEFAULT)
+        ]);
     }
 
     // --- CRUD ---
