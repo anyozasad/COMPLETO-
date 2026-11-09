@@ -290,6 +290,7 @@ CREATE TABLE `ventas` (
   `caja_id` int NOT NULL,
   `socio_id` int DEFAULT NULL,
   `total` decimal(10,2) NOT NULL,
+  `descuento` decimal(10,2) NOT NULL DEFAULT '0.00',
   `metodo_pago` enum('efectivo','tarjeta','transferencia') DEFAULT 'efectivo',
   `fecha` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
