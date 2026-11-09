@@ -18,21 +18,17 @@ class Dashboard {
 
     // 2. KPI: Ingresos (Suscripciones) del mes
     public function ingresosEsteMes() {
-        $mes_actual = date('m');
-        $anio_actual = date('Y');
-        
-        $query = "SELECT SUM(p.precio) as total 
-                  FROM suscripciones s 
-                  INNER JOIN planes p ON s.plan_id = p.id 
-                  WHERE MONTH(s.fecha_inicio) = :mes AND YEAR(s.fecha_inicio) = :anio";
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':mes', $mes_actual);
-        $stmt->bindParam(':anio', $anio_actual);
-        $stmt->execute();
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        return $row['total'] ? $row['total'] : 0;
+        require_once __DIR__ . '/PagoSuscripcion.php';
+        new PagoSuscripcion();
+        $query="SELECT
+            (SELECT COALESCE(SUM(total),0) FROM ventas
+             WHERE fecha >= DATE_FORMAT(CURRENT_DATE(),'%Y-%m-01')
+               AND fecha < DATE_FORMAT(CURRENT_DATE()+INTERVAL 1 MONTH,'%Y-%m-01'))
+            +
+            (SELECT COALESCE(SUM(monto),0) FROM pagos_suscripciones
+             WHERE fecha_pago >= DATE_FORMAT(CURRENT_DATE(),'%Y-%m-01')
+               AND fecha_pago < DATE_FORMAT(CURRENT_DATE()+INTERVAL 1 MONTH,'%Y-%m-01')) AS total";
+        return (float)$this->conn->query($query)->fetchColumn();
     }
 
     // 3. KPI NUEVO: Egresos (Gastos) del mes
